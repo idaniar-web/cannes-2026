@@ -1,0 +1,20 @@
+# Local Letterboxd rating export (personal)
+letterboxd.pdf
+letterboxd.txt
+
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+
+# IDE
+.vscode/
+.kiro/
+
+# Build artefacts we regenerate from source
+dashboard_data.json
+
+# Scratch
+check_dup.py

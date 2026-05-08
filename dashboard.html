@@ -1,0 +1,1091 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Cannes 2026 · Schedule Builder</title>
+<style>
+  :root {
+    --bg: #0d0d10;
+    --surface: #17171c;
+    --surface-2: #1f1f26;
+    --border: #2b2b33;
+    --text: #f0f0f0;
+    --muted: #8a8a94;
+    --accent: #ffcc33;
+    --accent-2: #ff5576;
+    --good: #4ade80;
+    --warn: #fbbf24;
+    --bad: #f87171;
+    --gala: #c084fc;
+    --comp: #60a5fa;
+    --ucr: #34d399;
+    --df: #fbbf24;
+    --premiere: #f472b6;
+    --ooc: #fb923c;
+    --mid: #a78bfa;
+    --semaine: #2dd4bf;
+    --special: #94a3b8;
+    --shorts: #facc15;
+    --other: #64748b;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.45;
+  }
+  header {
+    padding: 20px 32px 0;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(180deg, #18181f 0%, #0d0d10 100%);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  h1 {
+    margin: 0 0 4px 0;
+    font-size: 22px;
+    letter-spacing: 0.5px;
+  }
+  h1 span.accent { color: var(--accent); }
+  .tagline {
+    color: var(--muted);
+    font-size: 13px;
+    margin-bottom: 12px;
+  }
+  .main-tabs {
+    display: flex;
+    gap: 2px;
+    margin-bottom: -1px;
+  }
+  .main-tab {
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid transparent;
+    border-bottom: none;
+    padding: 10px 18px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    border-radius: 8px 8px 0 0;
+  }
+  .main-tab:hover { color: var(--text); }
+  .main-tab.active {
+    background: var(--bg);
+    color: var(--accent);
+    border-color: var(--border);
+  }
+  .day-tabs {
+    display: flex;
+    gap: 4px;
+    margin: 14px 0 0;
+    padding-bottom: 14px;
+    flex-wrap: wrap;
+  }
+  .day-tab {
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+    padding: 7px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+  }
+  .day-tab:hover { border-color: var(--accent); }
+  .day-tab.active {
+    background: var(--accent);
+    color: #0d0d10;
+    border-color: var(--accent);
+  }
+  .day-tab .cnt {
+    opacity: 0.6;
+    margin-left: 6px;
+    font-size: 10px;
+  }
+  main { padding: 24px 32px 80px; }
+
+  .summary {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    display: flex;
+    gap: 28px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .summary .metric { display: flex; flex-direction: column; gap: 2px; }
+  .summary .metric b { font-size: 18px; color: var(--accent); }
+  .summary .metric small {
+    color: var(--muted); font-size: 11px;
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .summary .spacer { flex: 1; }
+  .summary button {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+  }
+  .summary button:hover { border-color: var(--accent); }
+
+  .slot {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+  .slot-header {
+    padding: 12px 18px;
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .slot-header .slot-time {
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+  }
+  .slot-header .slot-main { flex: 1; font-size: 15px; font-weight: 600; }
+  .slot-header .gala-tag {
+    margin-left: 10px;
+    background: var(--gala);
+    color: #0d0d10;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .slot-header .slot-time-range { color: var(--muted); font-size: 12px; }
+  .slot-body { padding: 12px 18px 16px; }
+  .options-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 12px;
+  }
+  .option {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.1s;
+  }
+  .option:hover { border-color: var(--accent); }
+  .option.selected {
+    border-color: var(--accent);
+    background: #2a2516;
+    box-shadow: 0 0 0 1px var(--accent) inset;
+  }
+  .option.backup { opacity: 0.85; }
+  .option .opt-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+  .option .title {
+    font-weight: 600; font-size: 14px; line-height: 1.25;
+  }
+  .option .score-badge {
+    flex-shrink: 0;
+    background: var(--surface-2);
+    color: var(--text);
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .option .score-badge.s-peak { background: #22c55e; color: #0d0d10; }
+  .option .score-badge.s-high { background: var(--good); color: #0d0d10; }
+  .option .score-badge.s-mid { background: var(--warn); color: #0d0d10; }
+  .option .score-badge.s-ok { background: var(--surface-2); color: var(--text); }
+  .option .score-badge.s-low { background: #374151; color: var(--muted); }
+  .option .meta-row {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    align-items: center;
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+  .option .director { color: var(--text); opacity: 0.9; font-size: 12px; }
+  .section-chip {
+    padding: 1px 8px;
+    border-radius: 8px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+  }
+  .section-chip.Competition { background: var(--comp); color: #0d0d10; }
+  .section-chip.UCR { background: var(--ucr); color: #0d0d10; }
+  .section-chip.DF { background: var(--df); color: #0d0d10; }
+  .section-chip.Cannes-Premiere { background: var(--premiere); color: #0d0d10; }
+  .section-chip.Out-of-Competition { background: var(--ooc); color: #0d0d10; }
+  .section-chip.Midnight-Screenings { background: var(--mid); color: #0d0d10; }
+  .section-chip.Semaine { background: var(--semaine); color: #0d0d10; }
+  .section-chip.Special { background: var(--special); color: #0d0d10; }
+  .section-chip.Shorts-Competition { background: var(--shorts); color: #0d0d10; }
+  .section-chip.Other { background: var(--other); color: #0d0d10; }
+  .option .times { font-size: 12px; color: var(--text); font-weight: 500; }
+  .option .venue { font-size: 11px; color: var(--muted); }
+  .option.gala .times::before { content: '🎩 '; }
+  .option.selected .radio-indicator::before { content: '●'; color: var(--accent); }
+  .radio-indicator {
+    position: absolute; top: 10px; right: 10px;
+    font-size: 12px; color: var(--muted);
+  }
+  .radio-indicator::before { content: '○'; }
+
+  .override-toggle {
+    margin-top: 12px;
+    background: transparent;
+    border: 1px dashed var(--border);
+    color: var(--muted);
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 12px;
+    width: 100%;
+    text-align: left;
+  }
+  .override-toggle:hover { color: var(--text); border-color: var(--muted); }
+  .override-panel {
+    display: none;
+    margin-top: 12px;
+    padding: 12px;
+    background: var(--surface-2);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+  }
+  .override-panel.open { display: block; }
+  .override-panel h4 {
+    margin: 0 0 8px 0;
+    font-size: 12px;
+    text-transform: uppercase;
+    color: var(--muted);
+    letter-spacing: 0.5px;
+  }
+  .override-panel select {
+    width: 100%;
+    background: var(--bg);
+    color: var(--text);
+    border: 1px solid var(--border);
+    padding: 8px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-family: inherit;
+  }
+
+  /* Modal */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    z-index: 500;
+    padding: 40px 20px;
+    overflow-y: auto;
+  }
+  .modal-overlay.open { display: block; }
+  .modal {
+    max-width: 640px;
+    margin: 0 auto;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    position: relative;
+  }
+  .modal .close {
+    position: absolute; top: 14px; right: 14px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 18px; line-height: 1;
+  }
+  .modal h2 { margin: 0 0 4px 0; font-size: 22px; }
+  .modal .director-line { color: var(--muted); font-size: 14px; margin-bottom: 14px; }
+  .modal .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+  .modal .chip {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .modal h4 {
+    margin: 16px 0 6px 0; font-size: 12px;
+    text-transform: uppercase; color: var(--muted); letter-spacing: 0.5px;
+  }
+  .modal p { margin: 0; font-size: 14px; line-height: 1.55; }
+  .modal .screenings-list { margin-top: 8px; display: flex; flex-direction: column; gap: 6px; }
+  .modal .screenings-list .sc {
+    font-size: 12px;
+    background: var(--surface-2);
+    padding: 6px 10px;
+    border-radius: 6px;
+    display: flex; justify-content: space-between;
+  }
+  .modal .screenings-list .sc.mine {
+    background: #2a2516;
+    border: 1px solid var(--accent);
+  }
+  .modal .score-row { display: flex; gap: 16px; margin: 8px 0 14px 0; }
+  .modal .score-cell {
+    flex: 1;
+    background: var(--surface-2);
+    padding: 10px 14px;
+    border-radius: 8px;
+  }
+  .modal .score-cell b { font-size: 20px; color: var(--accent); display: block; }
+  .modal .score-cell small {
+    color: var(--muted); font-size: 10px;
+    letter-spacing: 0.5px; text-transform: uppercase;
+  }
+
+  .legend {
+    display: flex; gap: 12px; font-size: 11px;
+    color: var(--muted); margin-top: 8px; flex-wrap: wrap;
+  }
+  .legend span { display: flex; align-items: center; gap: 4px; }
+  .legend span::before {
+    content: ''; width: 10px; height: 10px; border-radius: 50%;
+    display: inline-block;
+  }
+  .legend .l-comp::before { background: var(--comp); }
+  .legend .l-ucr::before { background: var(--ucr); }
+  .legend .l-df::before { background: var(--df); }
+  .legend .l-prem::before { background: var(--premiere); }
+  .legend .l-mid::before { background: var(--mid); }
+  .legend .l-gala::before { background: var(--gala); }
+  .no-films { color: var(--muted); padding: 40px 20px; text-align: center; }
+
+  /* Summary tab */
+  .summary-tab .day-block {
+    margin-bottom: 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .summary-tab .day-block-header {
+    padding: 12px 18px;
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--border);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .summary-tab .day-block-header .date-label {
+    font-size: 15px;
+    color: var(--accent);
+  }
+  .summary-tab .day-block-header .day-stats {
+    color: var(--muted);
+    font-size: 12px;
+    margin-left: auto;
+  }
+  .summary-tab .pick-row {
+    padding: 10px 18px;
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+  .summary-tab .pick-row:last-child { border-bottom: none; }
+  .summary-tab .pick-row:hover { background: var(--surface-2); cursor: pointer; }
+  .summary-tab .pick-row .pt-time {
+    min-width: 130px; color: var(--muted); font-variant-numeric: tabular-nums;
+    font-size: 12px;
+  }
+  .summary-tab .pick-row .pt-title {
+    flex: 1; font-weight: 500;
+  }
+  .summary-tab .pick-row .pt-director {
+    color: var(--muted); font-size: 12px;
+  }
+  .summary-tab .pick-row.gala { background: #1b1524; }
+  .summary-tab .pick-row.gala:hover { background: #251b30; }
+
+  /* Competition tracker */
+  .comp-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .comp-table th, .comp-table td {
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+  .comp-table th {
+    background: var(--surface-2);
+    color: var(--muted);
+    font-weight: 600;
+    font-size: 11px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  .comp-table tr:last-child td { border-bottom: none; }
+  .comp-table tr.status-going td { background: #12231a; }
+  .comp-table tr.status-missed td { color: var(--muted); opacity: 0.8; }
+  .comp-table tr:hover td { background: var(--surface-2); }
+  .status-pill {
+    display: inline-block;
+    padding: 2px 9px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+  }
+  .status-pill.going { background: var(--good); color: #0d0d10; }
+  .status-pill.missed { background: #374151; color: var(--muted); }
+
+  /* Lookup tab */
+  .lookup-search {
+    position: relative;
+    margin-bottom: 20px;
+  }
+  .lookup-search input {
+    width: 100%;
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 18px 14px 44px;
+    font-size: 15px;
+    font-family: inherit;
+  }
+  .lookup-search input:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+  .lookup-search::before {
+    content: '🔍';
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 16px;
+    opacity: 0.6;
+  }
+  .lookup-results {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 12px;
+  }
+  .lookup-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    cursor: pointer;
+  }
+  .lookup-card:hover { border-color: var(--accent); }
+  .lookup-card .lc-title {
+    font-weight: 600;
+    font-size: 15px;
+    margin-bottom: 2px;
+  }
+  .lookup-card .lc-director {
+    color: var(--muted);
+    font-size: 12px;
+    margin-bottom: 8px;
+  }
+  .lookup-card .lc-meta {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .lookup-card .lc-screenings {
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .lookup-card .lc-screenings b {
+    color: var(--text);
+    font-weight: 500;
+  }
+  .lookup-empty {
+    padding: 60px 20px;
+    text-align: center;
+    color: var(--muted);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Cannes <span class="accent">2026</span> · Schedule Builder</h1>
+  <div class="tagline">Personalised picks for Daniel. Main + backups per slot, custom override any screening.</div>
+  <div class="main-tabs">
+    <button class="main-tab active" data-tab="planner">🗓 Planner</button>
+    <button class="main-tab" data-tab="summary">📋 My Plan</button>
+    <button class="main-tab" data-tab="competition">🏆 Competition Tracker</button>
+    <button class="main-tab" data-tab="lookup">🔍 Lookup</button>
+  </div>
+  <div id="sub-nav"></div>
+</header>
+
+<main id="main-content"></main>
+
+<div class="modal-overlay" id="modal"><div class="modal" id="modal-content"></div></div>
+
+<script>
+const DATA = __DATA__;
+
+const state = {
+  tab: 'planner',
+  day: Object.keys(DATA.schedule).sort()[0],
+  selection: JSON.parse(localStorage.getItem('cannes_selection') || '{}'),
+  lookup: '',
+};
+
+function persistSelection() {
+  localStorage.setItem('cannes_selection', JSON.stringify(state.selection));
+}
+
+function fmtTime(m) {
+  if (m == null) return '';
+  const isNext = m >= 24*60;
+  const mm = m % (24*60);
+  let h = Math.floor(mm / 60), mins = mm % 60;
+  const ampm = h >= 12 ? 'pm' : 'am';
+  let disp = h % 12; if (disp === 0) disp = 12;
+  return `${disp}:${mins.toString().padStart(2,'0')}${ampm}${isNext ? ' (+1)' : ''}`;
+}
+function fmtDate(d) {
+  const dt = new Date(d);
+  return dt.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
+}
+function fmtDateLong(d) {
+  const dt = new Date(d);
+  return dt.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
+}
+
+function scoreClass(s) {
+  if (s >= 9) return 's-peak';
+  if (s >= 7.5) return 's-high';
+  if (s >= 6) return 's-mid';
+  if (s >= 4.5) return 's-ok';
+  return 's-low';
+}
+function sectionClass(tag) { return (tag || 'Other').replace(/[^A-Za-z]/g, '-'); }
+function screeningById(day, id) { return DATA.schedule[day].find(x => x.id === id); }
+function slotKey(day, index) { return `${day}#${index}`; }
+function pickedForSlot(day, slot, slotIndex) {
+  return state.selection[slotKey(day, slotIndex)] || slot.main_id;
+}
+function normTitle(t) {
+  return (t || '').toUpperCase()
+    .replace(/…/g, '')
+    .replace(/\s*\(.*?\)\s*/g, ' ')
+    .replace(/\s*\([^)]*$/g, '')
+    .replace(/[''']$/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+// ============ Collect all selected screenings across all days =============
+function allSelectedScreenings() {
+  const picks = [];
+  for (const date of Object.keys(DATA.slots)) {
+    DATA.slots[date].forEach((sl, i) => {
+      const s = screeningById(date, pickedForSlot(date, sl, i));
+      if (s) picks.push({ date, screening: s, slotIndex: i });
+    });
+  }
+  return picks;
+}
+
+// ============ Main tab navigation =============
+function setTab(tab) {
+  state.tab = tab;
+  document.querySelectorAll('.main-tab').forEach(t => {
+    t.classList.toggle('active', t.dataset.tab === tab);
+  });
+  render();
+}
+document.querySelectorAll('.main-tab').forEach(t => {
+  t.onclick = () => setTab(t.dataset.tab);
+});
+
+// ============ Planner tab =============
+function renderDayTabs() {
+  const container = document.getElementById('sub-nav');
+  container.innerHTML = '<div class="day-tabs" id="day-tabs"></div>';
+  const tabs = document.getElementById('day-tabs');
+  tabs.innerHTML = '';
+  for (const d of Object.keys(DATA.schedule).sort()) {
+    const btn = document.createElement('button');
+    btn.className = 'day-tab' + (d === state.day ? ' active' : '');
+    const cnt = DATA.slots[d].length;
+    btn.innerHTML = `${fmtDate(d)}<span class="cnt">${cnt}</span>`;
+    btn.onclick = () => { state.day = d; renderDayTabs(); renderPlanner(); window.scrollTo(0, 0); };
+    tabs.appendChild(btn);
+  }
+}
+
+function renderPlannerSummary() {
+  const day = state.day;
+  const slots = DATA.slots[day];
+  const selected = slots.map((sl, i) => screeningById(day, pickedForSlot(day, sl, i)));
+  const n = selected.length;
+  const galas = selected.filter(s => s && s.is_gala).length;
+  const comp = selected.filter(s => s && s.meta.section_tag === 'Competition').length;
+  const avg = selected.reduce((a, s) => a + (s && s.meta.score || 0), 0) / (n || 1);
+  return `
+    <div class="summary">
+      <div class="metric"><b>${n}</b><small>films today</small></div>
+      <div class="metric"><b>${galas}</b><small>galas 🎩</small></div>
+      <div class="metric"><b>${comp}</b><small>competition</small></div>
+      <div class="metric"><b>${avg.toFixed(1)}</b><small>avg score</small></div>
+      <div class="spacer"></div>
+      <button onclick="resetDaySelections()">Reset day defaults</button>
+      <button onclick="exportPlan()">Export plan</button>
+    </div>
+  `;
+}
+
+function renderPlanner() {
+  const day = state.day;
+  const main = document.getElementById('main-content');
+  const slots = DATA.slots[day];
+  if (!slots || slots.length === 0) {
+    main.innerHTML = renderPlannerSummary() + '<div class="no-films">No plannable screenings for this day.</div>';
+    return;
+  }
+  let html = renderPlannerSummary();
+  slots.forEach((sl, i) => {
+    const picked = screeningById(day, pickedForSlot(day, sl, i));
+    const anchorH = fmtTime(sl.anchor_start);
+    const screenings = sl.screening_ids
+      .map(id => screeningById(day, id))
+      .filter(Boolean);
+    const ranked = [...screenings].sort((a, b) => {
+      if (a.id === picked.id) return -1;
+      if (b.id === picked.id) return 1;
+      return b.meta.score - a.meta.score;
+    });
+    const topN = ranked.slice(0, 6);
+    const rest = ranked.slice(6);
+
+    const optsHtml = topN.map(s => {
+      const isMain = s.id === picked.id;
+      const tagClass = sectionClass(s.meta.section_tag);
+      const sectionLabel = DATA.section_label[s.meta.section_tag] || s.meta.section_tag;
+      const scoreCls = scoreClass(s.meta.score);
+      const optCls = ['option', s.is_gala ? 'gala' : '', isMain ? 'selected' : 'backup'].join(' ');
+      return `
+        <div class="${optCls}" onclick="selectOption(${i}, '${s.id}')" ondblclick="openModal('${s.id}')">
+          <div class="radio-indicator"></div>
+          <div class="opt-header">
+            <div class="title">${escapeHtml(s.title)}</div>
+            <div class="score-badge ${scoreCls}">${s.meta.score}</div>
+          </div>
+          <div class="director">${escapeHtml(s.meta.director || s.director || '')}</div>
+          <div class="times">${s.start} – ${s.end}</div>
+          <div class="meta-row">
+            <span class="section-chip ${tagClass}">${sectionLabel}</span>
+            <span>${s.venue}</span>
+          </div>
+          <div class="meta-row" style="margin-top: 6px;">
+            <button onclick="event.stopPropagation(); openModal('${s.id}')"
+              style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:3px 8px;border-radius:5px;cursor:pointer;font-size:11px;">details</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    const overrideHtml = rest.length > 0 ? `
+      <button class="override-toggle" onclick="document.getElementById('override-${i}').classList.toggle('open')">
+        ↔ Custom override (${rest.length} more overlapping screenings)
+      </button>
+      <div id="override-${i}" class="override-panel">
+        <h4>Pick any overlapping screening</h4>
+        <select onchange="if(this.value) selectOption(${i}, this.value)">
+          <option value="">-- choose a custom override --</option>
+          ${rest.map(s => `
+            <option value="${s.id}" ${s.id === picked.id ? 'selected' : ''}>
+              ${s.start} · ${escapeHtml(s.title)} — ${escapeHtml(s.meta.director || s.director || '')} · ${DATA.section_label[s.meta.section_tag] || s.meta.section_tag} · score ${s.meta.score}
+            </option>
+          `).join('')}
+        </select>
+      </div>
+    ` : '';
+
+    html += `
+      <div class="slot">
+        <div class="slot-header">
+          <div class="slot-time">${anchorH}</div>
+          <div class="slot-main">
+            ${escapeHtml(picked.title)}${picked.is_gala ? '<span class="gala-tag">GALA 🎩</span>' : ''}
+          </div>
+          <div class="slot-time-range">${picked.start} – ${picked.end} · ${picked.venue}</div>
+        </div>
+        <div class="slot-body">
+          <div class="options-grid">${optsHtml}</div>
+          ${overrideHtml}
+        </div>
+      </div>
+    `;
+  });
+  main.innerHTML = html;
+}
+
+function selectOption(slotIndex, screeningId) {
+  state.selection[slotKey(state.day, slotIndex)] = screeningId;
+  persistSelection();
+  renderPlanner();
+}
+
+function resetDaySelections() {
+  const prefix = state.day + '#';
+  for (const k of Object.keys(state.selection)) {
+    if (k.startsWith(prefix)) delete state.selection[k];
+  }
+  persistSelection();
+  renderPlanner();
+}
+
+function exportPlan() {
+  const picks = allSelectedScreenings();
+  const lines = [`# Daniel's Cannes 2026 Plan`, ''];
+  let currentDay = null;
+  for (const p of picks) {
+    if (p.date !== currentDay) {
+      currentDay = p.date;
+      lines.push(`\n## ${fmtDateLong(p.date)}`);
+    }
+    const s = p.screening;
+    lines.push(`- ${s.start}-${s.end} · **${s.title}** · ${s.meta.director} · ${DATA.section_label[s.meta.section_tag] || s.meta.section_tag} · ${s.venue}${s.is_gala ? ' · GALA 🎩' : ''}`);
+  }
+  const text = lines.join('\n');
+  navigator.clipboard.writeText(text)
+    .then(() => alert('Plan copied to clipboard.\n\n' + text.slice(0, 500) + '...'))
+    .catch(() => {
+      const blob = new Blob([text], {type: 'text/plain'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'cannes_2026_plan.md'; a.click();
+    });
+}
+
+// ============ Summary tab =============
+function renderSummary() {
+  document.getElementById('sub-nav').innerHTML = '';
+  const picks = allSelectedScreenings();
+  const total = picks.length;
+  const galas = picks.filter(p => p.screening.is_gala).length;
+  const comp = picks.filter(p => p.screening.meta.section_tag === 'Competition').length;
+  const avg = total ? picks.reduce((a, p) => a + p.screening.meta.score, 0) / total : 0;
+  const byDay = {};
+  for (const p of picks) {
+    if (!byDay[p.date]) byDay[p.date] = [];
+    byDay[p.date].push(p);
+  }
+
+  let html = `
+    <div class="summary">
+      <div class="metric"><b>${total}</b><small>films total</small></div>
+      <div class="metric"><b>${galas}</b><small>galas 🎩</small></div>
+      <div class="metric"><b>${comp}</b><small>competition</small></div>
+      <div class="metric"><b>${avg.toFixed(1)}</b><small>avg score</small></div>
+      <div class="spacer"></div>
+      <button onclick="exportPlan()">Export full plan</button>
+    </div>
+    <div class="summary-tab">
+  `;
+
+  for (const date of Object.keys(byDay).sort()) {
+    const dayPicks = byDay[date];
+    const galaCount = dayPicks.filter(p => p.screening.is_gala).length;
+    html += `
+      <div class="day-block">
+        <div class="day-block-header">
+          <div class="date-label">${fmtDateLong(date)}</div>
+          <div class="day-stats">${dayPicks.length} films · ${galaCount} galas 🎩</div>
+        </div>
+    `;
+    for (const p of dayPicks) {
+      const s = p.screening;
+      const scoreCls = scoreClass(s.meta.score);
+      const tagClass = sectionClass(s.meta.section_tag);
+      const sectionLabel = DATA.section_label[s.meta.section_tag] || s.meta.section_tag;
+      html += `
+        <div class="pick-row${s.is_gala ? ' gala' : ''}" onclick="openModal('${s.id}')">
+          <div class="pt-time">${s.start}–${s.end}</div>
+          <div class="pt-title">
+            ${escapeHtml(s.title)}${s.is_gala ? ' 🎩' : ''}
+            <div class="pt-director">${escapeHtml(s.meta.director || '')} · ${s.venue}</div>
+          </div>
+          <span class="section-chip ${tagClass}">${sectionLabel}</span>
+          <div class="score-badge ${scoreCls}" style="padding:2px 8px;border-radius:10px;font-size:12px;font-weight:700;background:var(--surface-2);">${s.meta.score}</div>
+        </div>
+      `;
+    }
+    html += `</div>`;
+  }
+  html += `</div>`;
+  document.getElementById('main-content').innerHTML = html;
+}
+
+// ============ Competition tracker =============
+function renderCompetition() {
+  document.getElementById('sub-nav').innerHTML = '';
+  // Find all competition films (unique by normalized title)
+  const byTitle = {};
+  for (const date of Object.keys(DATA.schedule)) {
+    for (const s of DATA.schedule[date]) {
+      if (s.meta.section_tag !== 'Competition') continue;
+      const t = normTitle(s.title);
+      if (!byTitle[t]) byTitle[t] = { screenings: [], meta: s.meta, title: s.title, director: s.meta.director || s.director };
+      byTitle[t].screenings.push({ date, sc: s });
+    }
+  }
+  // Check which are attended
+  const attendedTitles = new Set(allSelectedScreenings().map(p => normTitle(p.screening.title)));
+  const selectedMap = {};
+  for (const p of allSelectedScreenings()) {
+    selectedMap[normTitle(p.screening.title)] = { date: p.date, sc: p.screening };
+  }
+  const films = Object.values(byTitle).sort((a, b) => {
+    const aGo = attendedTitles.has(normTitle(a.title)) ? 0 : 1;
+    const bGo = attendedTitles.has(normTitle(b.title)) ? 0 : 1;
+    if (aGo !== bGo) return aGo - bGo;
+    return b.meta.score - a.meta.score;
+  });
+
+  const going = films.filter(f => attendedTitles.has(normTitle(f.title))).length;
+  const total = films.length;
+
+  let html = `
+    <div class="summary">
+      <div class="metric"><b>${going}/${total}</b><small>competition films</small></div>
+      <div class="metric"><b>${Math.round(going/total*100)}%</b><small>coverage</small></div>
+      <div class="spacer"></div>
+    </div>
+    <table class="comp-table">
+      <thead>
+        <tr>
+          <th>Status</th>
+          <th>Film</th>
+          <th>Director</th>
+          <th>Score</th>
+          <th>Screening</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+  for (const f of films) {
+    const isGoing = attendedTitles.has(normTitle(f.title));
+    const sel = selectedMap[normTitle(f.title)];
+    const screening = sel ? sel.sc : f.screenings[0].sc;
+    const date = sel ? sel.date : f.screenings[0].date;
+    const scoreCls = scoreClass(f.meta.score);
+    html += `
+      <tr class="${isGoing ? 'status-going' : 'status-missed'}" onclick="openModal('${screening.id}')" style="cursor:pointer;">
+        <td>${isGoing
+          ? '<span class="status-pill going">🎬 Going</span>'
+          : '<span class="status-pill missed">— Skipping</span>'}</td>
+        <td><b>${escapeHtml(f.title)}</b>${screening.is_gala && isGoing ? ' 🎩' : ''}</td>
+        <td>${escapeHtml(f.director || '')}</td>
+        <td><span class="score-badge ${scoreCls}" style="padding:2px 8px;border-radius:10px;font-size:12px;font-weight:700;">${f.meta.score}</span></td>
+        <td>${isGoing
+          ? `${fmtDate(date)} · ${screening.start} · ${screening.venue}`
+          : `<span style="color:var(--muted);">${f.screenings.length} screening${f.screenings.length === 1 ? '' : 's'} available</span>`}</td>
+      </tr>
+    `;
+  }
+  html += `</tbody></table>`;
+  document.getElementById('main-content').innerHTML = html;
+}
+
+// ============ Lookup tab =============
+function renderLookup() {
+  document.getElementById('sub-nav').innerHTML = '';
+  // Build unique film list
+  const byTitle = {};
+  for (const date of Object.keys(DATA.schedule)) {
+    for (const s of DATA.schedule[date]) {
+      if (!s.plannable) continue;
+      const t = normTitle(s.title);
+      if (!t) continue;
+      if (!byTitle[t]) byTitle[t] = { title: s.title, meta: s.meta, director: s.meta.director || s.director, screenings: [], section: s.meta.section_tag, firstId: s.id };
+      byTitle[t].screenings.push({ date, sc: s });
+    }
+  }
+  const q = state.lookup.toLowerCase().trim();
+  const films = Object.values(byTitle).filter(f => {
+    if (!q) return true;
+    return (f.title.toLowerCase().includes(q)
+      || (f.director || '').toLowerCase().includes(q)
+      || (f.meta.tags || []).some(t => (t || '').toLowerCase().includes(q))
+      || (f.meta.country || '').toLowerCase().includes(q)
+      || f.section.toLowerCase().includes(q));
+  }).sort((a, b) => b.meta.score - a.meta.score);
+
+  const mainHtml = `
+    <div class="lookup-search">
+      <input id="lookup-input" type="text" placeholder="Search by title, director, tag, country or section..." value="${escapeHtml(state.lookup)}" autofocus />
+    </div>
+    <div style="margin-bottom:10px;color:var(--muted);font-size:12px;">
+      ${films.length} film${films.length === 1 ? '' : 's'} ${q ? 'matched' : 'in the festival'}
+    </div>
+    ${films.length === 0
+      ? '<div class="lookup-empty">No films match your search.</div>'
+      : `<div class="lookup-results">${films.map(f => {
+          const scoreCls = scoreClass(f.meta.score);
+          const tagClass = sectionClass(f.meta.section_tag);
+          const sectionLabel = DATA.section_label[f.meta.section_tag] || f.meta.section_tag;
+          return `
+            <div class="lookup-card" onclick="openModal('${f.firstId}')">
+              <div class="lc-title">${escapeHtml(f.title)}</div>
+              <div class="lc-director">${escapeHtml(f.director || '')} ${f.meta.country ? '· ' + f.meta.country : ''}${f.meta.runtime ? ' · ' + f.meta.runtime + 'min' : ''}</div>
+              <div class="lc-meta">
+                <span class="section-chip ${tagClass}">${sectionLabel}</span>
+                <span class="score-badge ${scoreCls}" style="padding:2px 8px;border-radius:10px;font-size:12px;font-weight:700;">${f.meta.score}</span>
+              </div>
+              <div class="lc-screenings">
+                <b>${f.screenings.length} screening${f.screenings.length === 1 ? '' : 's'}:</b> ${f.screenings.slice(0,3).map(scx => `${fmtDate(scx.date)} ${scx.sc.start}`).join(' · ')}${f.screenings.length > 3 ? ' · …' : ''}
+              </div>
+            </div>
+          `;
+        }).join('')}</div>`
+    }
+  `;
+  document.getElementById('main-content').innerHTML = mainHtml;
+  // Wire up the search input
+  const inp = document.getElementById('lookup-input');
+  if (inp) {
+    inp.oninput = (e) => { state.lookup = e.target.value; renderLookup(); };
+    // Keep focus
+    setTimeout(() => {
+      const len = inp.value.length;
+      inp.focus();
+      inp.setSelectionRange(len, len);
+    }, 0);
+  }
+}
+
+// ============ Modal (shared) =============
+function openModal(screeningId) {
+  // Search across all days for the screening with this id
+  let s = null, sDate = null;
+  for (const d of Object.keys(DATA.schedule)) {
+    const found = DATA.schedule[d].find(x => x.id === screeningId);
+    if (found) { s = found; sDate = d; break; }
+  }
+  if (!s) return;
+
+  const normT = normTitle(s.title);
+  const allScreenings = [];
+  for (const date of Object.keys(DATA.schedule)) {
+    for (const sc of DATA.schedule[date]) {
+      if (normTitle(sc.title) === normT) {
+        allScreenings.push({ date, sc });
+      }
+    }
+  }
+  allScreenings.sort((a, b) => {
+    if (a.date !== b.date) return a.date.localeCompare(b.date);
+    return (a.sc.start_minutes || 0) - (b.sc.start_minutes || 0);
+  });
+
+  // Find current selection for this title, if any
+  const selected = allSelectedScreenings();
+  const selectedForThis = selected.find(p => normTitle(p.screening.title) === normT);
+
+  const modal = document.getElementById('modal-content');
+  const tagClass = sectionClass(s.meta.section_tag);
+  const sectionLabel = DATA.section_label[s.meta.section_tag] || s.meta.section_tag;
+  modal.innerHTML = `
+    <button class="close" onclick="document.getElementById('modal').classList.remove('open')">×</button>
+    <h2>${escapeHtml(s.title)}</h2>
+    <div class="director-line">${escapeHtml(s.meta.director || s.director || '')} · ${s.meta.country || ''} ${s.meta.runtime ? '· ' + s.meta.runtime + 'min' : ''}</div>
+    <div class="chips">
+      <span class="chip section-chip ${tagClass}" style="color:#0d0d10;font-weight:700">${sectionLabel}</span>
+      ${s.is_gala ? '<span class="chip" style="background:var(--gala);color:#0d0d10;font-weight:700">GALA 🎩</span>' : ''}
+      ${(s.meta.tags || []).map(t => `<span class="chip">${t}</span>`).join('')}
+    </div>
+    <div class="score-row">
+      <div class="score-cell"><b>${s.meta.taste}</b><small>Taste match</small></div>
+      <div class="score-cell"><b>${s.meta.prestige}</b><small>Prestige</small></div>
+      <div class="score-cell"><b>${s.meta.score}</b><small>Overall</small></div>
+    </div>
+    ${s.meta.synopsis ? `<h4>Synopsis</h4><p>${escapeHtml(s.meta.synopsis)}</p>` : ''}
+    ${s.meta.director_note ? `<h4>Director</h4><p>${escapeHtml(s.meta.director_note)}</p>` : ''}
+    <h4>Screenings across the festival ${selectedForThis ? '· <span style="color:var(--accent);text-transform:none;letter-spacing:0;">You are going on ' + fmtDate(selectedForThis.date) + '</span>' : ''}</h4>
+    <div class="screenings-list">
+      ${allScreenings.map(({date, sc}) => {
+        const mine = selectedForThis && selectedForThis.screening.id === sc.id;
+        return `
+          <div class="sc${mine ? ' mine' : ''}">
+            <span>${fmtDate(date)} · ${sc.start} – ${sc.end}${sc.is_gala ? ' · 🎩' : ''}${mine ? ' · ✅ mine' : ''}</span>
+            <span>${sc.venue}</span>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+  document.getElementById('modal').classList.add('open');
+}
+
+function escapeHtml(s) {
+  return String(s || '').replace(/[&<>"']/g, c => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  })[c]);
+}
+
+document.getElementById('modal').addEventListener('click', (e) => {
+  if (e.target.id === 'modal') e.target.classList.remove('open');
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') document.getElementById('modal').classList.remove('open');
+});
+
+function render() {
+  if (state.tab === 'planner') {
+    renderDayTabs();
+    renderPlanner();
+  } else if (state.tab === 'summary') {
+    renderSummary();
+  } else if (state.tab === 'competition') {
+    renderCompetition();
+  } else if (state.tab === 'lookup') {
+    renderLookup();
+  }
+}
+render();
+</script>
+
+</body>
+</html>
