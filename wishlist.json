@@ -1,14 +1,14 @@
 {
   "date": "2026-05-18",
-  "generated_at": "2026-05-13T12:42:01+00:00",
-  "min_score": 7.0,
+  "generated_at": "2026-05-13T13:21:21.525Z",
+  "source": "dashboard",
   "screenings": [
     {
       "idproj": "uq4bZ0NWdH4=",
       "title": "HER PRIVATE HELL",
       "start": "10:30 pm",
       "venue": "GRAND THÉÂTRE LUMIÈRE",
-      "score": 9.0,
+      "score": 9,
       "grand_theatre_gala": true
     },
     {
@@ -28,19 +28,27 @@
       "grand_theatre_gala": false
     },
     {
-      "idproj": "wjBXS47UMqw=",
-      "title": "L'INCONNUE (THE UNKNOWN)",
-      "start": "3:30 pm",
-      "venue": "GRAND THÉÂTRE LUMIÈRE",
-      "score": 9.5,
+      "idproj": "ToK8woDWBTA=",
+      "title": "PAPER TIGER",
+      "start": "2:30 pm",
+      "venue": "CINEUM AURORE",
+      "score": 9,
       "grand_theatre_gala": false
     },
     {
-      "idproj": "7eeXFl7O+hY=",
-      "title": "SHEEP IN THE BOX",
+      "idproj": "30q5/+dVKNA=",
+      "title": "MOULIN",
       "start": "8:45 am",
+      "venue": "CINEUM IMAX",
+      "score": 8,
+      "grand_theatre_gala": false
+    },
+    {
+      "idproj": "PIuErCLSYDE=",
+      "title": "FULL PHIL",
+      "start": "5:00 pm",
       "venue": "CINEUM AURORE",
-      "score": 8.0,
+      "score": 8,
       "grand_theatre_gala": false
     }
   ]
