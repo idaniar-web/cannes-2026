@@ -1346,11 +1346,27 @@ async function submitWishlist() {
   btn.disabled = true;
   statusEl.innerHTML = '<span style="color:var(--muted);">Fetching current wishlist…</span>';
   try {
-    const { sha, parsed } = await fetchWishlistBody(token);
-    const merged = mergeWishlist(parsed, date, screenings);
+    // Always fetch fresh before PUT to avoid stale-SHA 409s.
+    let { sha, parsed } = await fetchWishlistBody(token);
+    let merged = mergeWishlist(parsed, date, screenings);
     merged.source = 'dashboard';
     statusEl.innerHTML = '<span style="color:var(--muted);">Committing merged wishlist…</span>';
-    const result = await putWishlist({ ...merged, date }, token, sha);
+    let result;
+    try {
+      result = await putWishlist({ ...merged, date }, token, sha);
+    } catch (e) {
+      // On 409 (SHA mismatch), someone else changed the file — re-merge
+      // against the latest and retry once.
+      if (/HTTP 409/.test(e.message)) {
+        statusEl.innerHTML = '<span style="color:var(--muted);">SHA changed; re-merging and retrying…</span>';
+        const fresh = await fetchWishlistBody(token);
+        merged = mergeWishlist(fresh.parsed, date, screenings);
+        merged.source = 'dashboard';
+        result = await putWishlist({ ...merged, date }, token, fresh.sha);
+      } else {
+        throw e;
+      }
+    }
     localStorage.setItem('github_pat', token);
     const commitSha = result?.commit?.sha?.slice(0, 7) || '?';
     const totalDays = Object.keys(merged.by_date).length;
@@ -1359,6 +1375,8 @@ async function submitWishlist() {
       · ${totalDays} day${totalDays === 1 ? '' : 's'} total.
       The bookmarklet and extensions will pick it up on next click.
     </span>`;
+    // Refresh the summary footer so the user sees what's now live.
+    refreshExistingSummary().catch(() => {});
   } catch (e) {
     statusEl.innerHTML = `<span style="color:var(--bad);">❌ ${escapeHtml(e.message)}</span>`;
   } finally {
