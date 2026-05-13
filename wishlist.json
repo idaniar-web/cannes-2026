@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-05-13T13:58:44.067Z",
+  "updated_at": "2026-05-13T13:59:49.736Z",
   "by_date": {
     "2026-05-17": {
       "generated_at": "2026-05-13T13:54:39.932Z",
@@ -31,7 +31,7 @@
       ]
     },
     "2026-05-18": {
-      "generated_at": "2026-05-13T13:58:44.067Z",
+      "generated_at": "2026-05-13T13:59:49.736Z",
       "screenings": [
         {
           "idproj": "uq4bZ0NWdH4=",
@@ -66,10 +66,10 @@
           "grand_theatre_gala": false
         },
         {
-          "idproj": "30q5/+dVKNA=",
-          "title": "MOULIN",
+          "idproj": "7eeXFl7O+hY=",
+          "title": "SHEEP IN THE BOX",
           "start": "8:45 am",
-          "venue": "CINEUM IMAX",
+          "venue": "CINEUM AURORE",
           "score": 8,
           "grand_theatre_gala": false
         },
