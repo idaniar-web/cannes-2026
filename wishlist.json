@@ -1,31 +1,36 @@
 {
-  "date": "2026-05-17",
-  "generated_at": "2026-05-13T13:28:01.796Z",
-  "source": "dashboard",
-  "screenings": [
-    {
-      "idproj": "Jfu6YKcXhM4=",
-      "title": "HOPE",
-      "start": "9:30 pm",
-      "venue": "GRAND THÉÂTRE LUMIÈRE",
-      "score": 9.5,
-      "grand_theatre_gala": true
-    },
-    {
-      "idproj": "ieRJ0ScfujA=",
-      "title": "GARANCE",
-      "start": "6:30 pm",
-      "venue": "GRAND THÉÂTRE LUMIÈRE",
-      "score": 7.5,
-      "grand_theatre_gala": true
-    },
-    {
-      "idproj": "RFabjygRSLs=",
-      "title": "SHANA",
-      "start": "5:00 pm",
-      "venue": "STUDIO 13",
-      "score": 5,
-      "grand_theatre_gala": false
+  "updated_at": "2026-05-13T13:48:17.337Z",
+  "by_date": {
+    "2026-05-17": {
+      "generated_at": "2026-05-13T13:48:17.337Z",
+      "screenings": [
+        {
+          "idproj": "Jfu6YKcXhM4=",
+          "title": "HOPE",
+          "start": "9:30 pm",
+          "venue": "GRAND THÉÂTRE LUMIÈRE",
+          "score": 9.5,
+          "grand_theatre_gala": true
+        },
+        {
+          "idproj": "ieRJ0ScfujA=",
+          "title": "GARANCE",
+          "start": "6:30 pm",
+          "venue": "GRAND THÉÂTRE LUMIÈRE",
+          "score": 7.5,
+          "grand_theatre_gala": true
+        },
+        {
+          "idproj": "RFabjygRSLs=",
+          "title": "SHANA",
+          "start": "5:00 pm",
+          "venue": "STUDIO 13",
+          "score": 5,
+          "grand_theatre_gala": false
+        }
+      ]
     }
-  ]
+  },
+  "source": "dashboard",
+  "date": "2026-05-17"
 }
