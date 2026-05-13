@@ -551,6 +551,7 @@
     <button class="main-tab" data-tab="summary">📋 My Plan</button>
     <button class="main-tab" data-tab="competition">🏆 Competition Tracker</button>
     <button class="main-tab" data-tab="lookup">🔍 Lookup</button>
+    <button class="main-tab" data-tab="control">⚙️ Control</button>
   </div>
   <div id="sub-nav"></div>
 </header>
@@ -1083,6 +1084,8 @@ function render() {
     renderCompetition();
   } else if (state.tab === 'lookup') {
     renderLookup();
+  } else if (state.tab === 'control') {
+    renderControl();
   }
 }
 render();
@@ -1377,6 +1380,323 @@ async function submitWishlist() {
     </span>`;
     // Refresh the summary footer so the user sees what's now live.
     refreshExistingSummary().catch(() => {});
+  } catch (e) {
+    statusEl.innerHTML = `<span style="color:var(--bad);">❌ ${escapeHtml(e.message)}</span>`;
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+// ============ Control panel =============
+const CONFIG_REPO = 'idaniar-web/cannes-watcher';
+const CONFIG_PATH = 'config.json';
+const CONFIG_BRANCH = 'mainline';
+const CONFIG_RAW_URL =
+  `https://raw.githubusercontent.com/${CONFIG_REPO}/${CONFIG_BRANCH}/${CONFIG_PATH}`;
+
+async function fetchLiveConfig() {
+  const r = await fetch(CONFIG_RAW_URL + `?cb=${Date.now()}`, { cache: 'no-store' });
+  if (!r.ok) throw new Error(`GET config.json: HTTP ${r.status}`);
+  return r.json();
+}
+
+async function fetchConfigSha(token) {
+  const r = await fetch(
+    `https://api.github.com/repos/${CONFIG_REPO}/contents/${CONFIG_PATH}?ref=${CONFIG_BRANCH}`,
+    { headers: { 'Accept': 'application/vnd.github+json',
+                 'Authorization': `Bearer ${token}` } }
+  );
+  if (r.status === 404) return null;
+  if (!r.ok) throw new Error(`GET contents: HTTP ${r.status}`);
+  return (await r.json()).sha;
+}
+
+async function putConfig(payload, token, sha) {
+  const body = {
+    message: 'chore: update watcher config',
+    content: btoa(unescape(encodeURIComponent(JSON.stringify(payload, null, 2)))),
+    branch: CONFIG_BRANCH,
+  };
+  if (sha) body.sha = sha;
+  const r = await fetch(
+    `https://api.github.com/repos/${CONFIG_REPO}/contents/${CONFIG_PATH}`,
+    { method: 'PUT',
+      headers: { 'Accept': 'application/vnd.github+json',
+                 'Authorization': `Bearer ${token}`,
+                 'Content-Type': 'application/json' },
+      body: JSON.stringify(body) }
+  );
+  if (!r.ok) {
+    const text = await r.text();
+    throw new Error(`PUT contents: HTTP ${r.status} — ${text.slice(0, 200)}`);
+  }
+  return r.json();
+}
+
+let CONTROL_STATE = null;
+
+async function renderControl() {
+  document.getElementById('sub-nav').innerHTML = '';
+  const main = document.getElementById('main-content');
+  main.innerHTML = '<div class="summary"><div class="metric">Loading config…</div></div>';
+
+  let cfg;
+  try {
+    cfg = await fetchLiveConfig();
+  } catch (e) {
+    main.innerHTML = `<div class="summary"><div style="color:var(--bad);">
+      Failed to load config.json from ${CONFIG_REPO}: ${escapeHtml(e.message)}</div></div>`;
+    return;
+  }
+  // Normalise defaults.
+  cfg.notify_score ??= 7.0;
+  cfg.auto_book_enabled ??= true;
+  cfg.auto_book_denylist ??= [];
+  cfg.auto_book_allowlist_extra ??= [];
+  cfg.silence_notifications ??= [];
+  CONTROL_STATE = cfg;
+
+  const idprojMap = DATA.idproj_map || {};
+  const galas = Object.values(idprojMap).filter(v => v.grand_theatre_gala)
+    .sort((a, b) => (a.date + a.start).localeCompare(b.date + b.start));
+
+  const isDenied = (id) => cfg.auto_book_denylist.includes(id);
+  const isSilenced = (id) => cfg.silence_notifications.includes(id);
+  const isExtraAllowed = (id) => cfg.auto_book_allowlist_extra.includes(id);
+
+  let html = `
+    <div class="summary">
+      <div class="metric">
+        <b>${cfg.notify_score.toFixed(1)}</b><small>notify threshold</small>
+      </div>
+      <div class="metric">
+        <b style="color:${cfg.auto_book_enabled ? 'var(--good)' : 'var(--bad)'};">
+          ${cfg.auto_book_enabled ? 'ON' : 'OFF'}</b>
+        <small>auto-book master</small>
+      </div>
+      <div class="metric"><b>${cfg.auto_book_denylist.length}</b><small>on denylist</small></div>
+      <div class="metric"><b>${cfg.silence_notifications.length}</b><small>silenced</small></div>
+      <div class="spacer"></div>
+      <button onclick="openControlSaveModal()"
+              style="background:var(--accent);color:#0d0d10;font-weight:700;">💾 Save config</button>
+    </div>
+
+    <div class="slot">
+      <div class="slot-header"><div class="slot-main">Thresholds & master switch</div></div>
+      <div class="slot-body">
+        <div style="display:flex;gap:20px;align-items:center;flex-wrap:wrap;">
+          <label style="display:flex;gap:10px;align-items:center;">
+            <span>Notify threshold (push score ≥)</span>
+            <input id="cp-notify-score" type="number" step="0.5" min="0" max="10"
+                   value="${cfg.notify_score}"
+                   style="width:70px;background:var(--bg);color:var(--text);border:1px solid var(--border);padding:4px 8px;border-radius:4px;font-size:13px;" />
+          </label>
+          <label style="display:flex;gap:10px;align-items:center;">
+            <input id="cp-auto-book" type="checkbox" ${cfg.auto_book_enabled ? 'checked' : ''} />
+            <span>Auto-book enabled (master switch)</span>
+          </label>
+        </div>
+        <div class="muted" style="margin-top:8px;font-size:11px;">
+          Master switch off = no screening is ever auto-booked regardless of individual rules. Use if you want to temporarily pause bookings.
+        </div>
+      </div>
+    </div>
+
+    <div class="slot">
+      <div class="slot-header">
+        <div class="slot-main">Galas (auto-booked by default)</div>
+      </div>
+      <div class="slot-body">
+        <div class="muted" style="margin-bottom:10px;font-size:12px;">
+          Denylist prevents auto-booking and leaves the opening as a manual push (if not silenced).
+          Useful after a test: cancel the ticket, deny the idproj, avoid a re-book.
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(420px,1fr));gap:8px;">
+  `;
+  for (const g of galas) {
+    html += `
+      <div class="option ${isDenied(g.idproj) ? '' : 'selected'}" style="padding:10px;">
+        <div style="font-weight:600;font-size:13px;">
+          ${g.grand_theatre_gala ? '🎭 ' : ''}${escapeHtml(g.title || '(untitled)')}
+        </div>
+        <div class="muted" style="font-size:11px;margin-bottom:6px;">
+          ${g.date} · ${escapeHtml(g.start || '')} · ${escapeHtml(g.venue || '')}
+          ${g.score ? ` · score ${g.score}` : ''}
+        </div>
+        <div style="display:flex;gap:12px;font-size:11px;">
+          <label style="display:flex;gap:4px;align-items:center;">
+            <input type="checkbox" class="cp-deny" data-idproj="${g.idproj}"
+                   ${isDenied(g.idproj) ? 'checked' : ''} />
+            <span>deny auto-book</span>
+          </label>
+          <label style="display:flex;gap:4px;align-items:center;">
+            <input type="checkbox" class="cp-silence" data-idproj="${g.idproj}"
+                   ${isSilenced(g.idproj) ? 'checked' : ''} />
+            <span>silence push</span>
+          </label>
+        </div>
+      </div>
+    `;
+  }
+  html += `</div></div></div>`;
+
+  // Extra auto-book list (non-gala idprojs).
+  if (cfg.auto_book_allowlist_extra.length > 0) {
+    html += `
+      <div class="slot">
+        <div class="slot-header"><div class="slot-main">Extra auto-book (non-gala)</div></div>
+        <div class="slot-body">
+    `;
+    for (const id of cfg.auto_book_allowlist_extra) {
+      const ev = Object.values(idprojMap).find(v => v.idproj === id);
+      const label = ev ? `${ev.title} · ${ev.date} ${ev.start}` : '(unknown)';
+      html += `
+        <div class="option" style="padding:10px;display:flex;gap:10px;align-items:center;">
+          <div style="flex:1;">${escapeHtml(label)}</div>
+          <button onclick="cpRemoveExtra('${escapeHtml(id)}')"
+                  style="background:transparent;border:1px solid var(--border);color:var(--muted);font-size:11px;">
+            remove
+          </button>
+        </div>
+      `;
+    }
+    html += `</div></div>`;
+  }
+
+  html += `
+    <div class="slot">
+      <div class="slot-header"><div class="slot-main">Add extra auto-book</div></div>
+      <div class="slot-body">
+        <div style="display:flex;gap:8px;align-items:center;">
+          <input id="cp-extra-input" type="text" placeholder="idproj or title substring..."
+                 style="flex:1;background:var(--bg);color:var(--text);border:1px solid var(--border);padding:6px 10px;border-radius:4px;font-size:13px;" />
+          <button onclick="cpAddExtra()" class="ghost"
+                  style="background:transparent;border:1px solid var(--accent);color:var(--accent);">+ add</button>
+        </div>
+        <div id="cp-extra-status" class="muted" style="margin-top:6px;font-size:11px;"></div>
+      </div>
+    </div>
+  `;
+
+  main.innerHTML = html;
+
+  // Wire up checkbox change handlers (memory-only; committed on Save).
+  document.getElementById('cp-notify-score').oninput = (e) => {
+    CONTROL_STATE.notify_score = parseFloat(e.target.value) || 7.0;
+  };
+  document.getElementById('cp-auto-book').onchange = (e) => {
+    CONTROL_STATE.auto_book_enabled = e.target.checked;
+  };
+  document.querySelectorAll('.cp-deny').forEach(cb => {
+    cb.onchange = (e) => {
+      const id = e.target.dataset.idproj;
+      const set = new Set(CONTROL_STATE.auto_book_denylist);
+      if (e.target.checked) set.add(id); else set.delete(id);
+      CONTROL_STATE.auto_book_denylist = [...set];
+    };
+  });
+  document.querySelectorAll('.cp-silence').forEach(cb => {
+    cb.onchange = (e) => {
+      const id = e.target.dataset.idproj;
+      const set = new Set(CONTROL_STATE.silence_notifications);
+      if (e.target.checked) set.add(id); else set.delete(id);
+      CONTROL_STATE.silence_notifications = [...set];
+    };
+  });
+}
+
+function cpRemoveExtra(idproj) {
+  CONTROL_STATE.auto_book_allowlist_extra =
+    CONTROL_STATE.auto_book_allowlist_extra.filter(x => x !== idproj);
+  renderControl();
+}
+
+function cpAddExtra() {
+  const raw = document.getElementById('cp-extra-input').value.trim();
+  if (!raw) return;
+  const map = DATA.idproj_map || {};
+  let hit = Object.values(map).find(v => v.idproj === raw);
+  if (!hit) {
+    const needle = raw.toUpperCase();
+    hit = Object.values(map).find(v =>
+      v.title && v.title.toUpperCase().includes(needle));
+  }
+  const statusEl = document.getElementById('cp-extra-status');
+  if (!hit) {
+    statusEl.innerHTML = `<span style="color:var(--bad);">No match for "${escapeHtml(raw)}"</span>`;
+    return;
+  }
+  if (!CONTROL_STATE.auto_book_allowlist_extra.includes(hit.idproj)) {
+    CONTROL_STATE.auto_book_allowlist_extra.push(hit.idproj);
+  }
+  renderControl();
+}
+
+function openControlSaveModal() {
+  const cfg = CONTROL_STATE;
+  const modal = document.getElementById('modal-content');
+  modal.innerHTML = `
+    <button class="close" onclick="document.getElementById('modal').classList.remove('open')">×</button>
+    <h2>💾 Save control config</h2>
+    <div class="director-line">
+      Commits <code style="background:var(--surface-2);padding:2px 6px;border-radius:4px;">config.json</code>
+      to <b>${CONFIG_REPO}</b>.
+      Lambda re-reads it within ~60 seconds of the commit.
+    </div>
+    <h4>What will be committed</h4>
+    <pre style="background:var(--surface-2);padding:10px;border-radius:6px;font-size:11px;overflow-x:auto;max-height:220px;">${escapeHtml(JSON.stringify(cfg, null, 2))}</pre>
+    <h4>GitHub token <span style="text-transform:none;color:var(--muted);letter-spacing:0;">(needs Contents: R/W on ${CONFIG_REPO})</span></h4>
+    <div style="display:flex;gap:6px;">
+      <input id="ctl-token" type="password" placeholder="github_pat_..."
+             style="flex:1;background:var(--bg);color:var(--text);border:1px solid var(--border);padding:8px;border-radius:6px;font-size:13px;" />
+    </div>
+    <div style="margin-top:16px;display:flex;gap:8px;justify-content:flex-end;">
+      <button onclick="document.getElementById('modal').classList.remove('open')" style="background:var(--surface-2);border:1px solid var(--border);color:var(--text);">Cancel</button>
+      <button onclick="submitControl()" id="ctl-submit" style="background:var(--accent);color:#0d0d10;font-weight:700;">Commit config</button>
+    </div>
+    <div id="ctl-status" style="margin-top:10px;font-size:12px;"></div>
+  `;
+  document.getElementById('modal').classList.add('open');
+
+  // Default to the watcher-repo token if the user already saved one.
+  const savedTok = localStorage.getItem('github_pat_watcher');
+  if (savedTok) document.getElementById('ctl-token').value = savedTok;
+  else {
+    // Fall back to the wishlist PAT (cannes-2026 only); won't work for
+    // cannes-watcher. User will need to enter a new one.
+    const pat = localStorage.getItem('github_pat');
+    if (pat) document.getElementById('ctl-token').value = pat;
+  }
+}
+
+async function submitControl() {
+  const token = document.getElementById('ctl-token').value.trim();
+  const btn = document.getElementById('ctl-submit');
+  const statusEl = document.getElementById('ctl-status');
+  if (!token) {
+    statusEl.innerHTML = '<span style="color:var(--bad);">Enter a token first.</span>';
+    return;
+  }
+  btn.disabled = true;
+  statusEl.innerHTML = '<span style="color:var(--muted);">Committing…</span>';
+  try {
+    let sha = await fetchConfigSha(token);
+    let result;
+    try {
+      result = await putConfig(CONTROL_STATE, token, sha);
+    } catch (e) {
+      if (/HTTP 409/.test(e.message)) {
+        sha = await fetchConfigSha(token);
+        result = await putConfig(CONTROL_STATE, token, sha);
+      } else {
+        throw e;
+      }
+    }
+    localStorage.setItem('github_pat_watcher', token);
+    const commitSha = result?.commit?.sha?.slice(0, 7) || '?';
+    statusEl.innerHTML = `<span style="color:var(--good);">
+      ✅ Saved · commit ${commitSha}. Lambda will pick up within ~60s.
+    </span>`;
   } catch (e) {
     statusEl.innerHTML = `<span style="color:var(--bad);">❌ ${escapeHtml(e.message)}</span>`;
   } finally {
