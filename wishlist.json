@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-05-13T13:54:39.932Z",
+  "updated_at": "2026-05-13T13:58:44.067Z",
   "by_date": {
     "2026-05-17": {
       "generated_at": "2026-05-13T13:54:39.932Z",
@@ -29,8 +29,61 @@
           "grand_theatre_gala": false
         }
       ]
+    },
+    "2026-05-18": {
+      "generated_at": "2026-05-13T13:58:44.067Z",
+      "screenings": [
+        {
+          "idproj": "uq4bZ0NWdH4=",
+          "title": "HER PRIVATE HELL",
+          "start": "10:30 pm",
+          "venue": "GRAND THÉÂTRE LUMIÈRE",
+          "score": 9,
+          "grand_theatre_gala": true
+        },
+        {
+          "idproj": "lVfG5wfUSFw=",
+          "title": "FJORD",
+          "start": "7:00 pm",
+          "venue": "GRAND THÉÂTRE LUMIÈRE",
+          "score": 8.5,
+          "grand_theatre_gala": true
+        },
+        {
+          "idproj": "5lpRaC4n9wQ=",
+          "title": "HOPE",
+          "start": "11:30 am",
+          "venue": "GRAND THÉÂTRE LUMIÈRE",
+          "score": 9.5,
+          "grand_theatre_gala": false
+        },
+        {
+          "idproj": "ToK8woDWBTA=",
+          "title": "PAPER TIGER",
+          "start": "2:30 pm",
+          "venue": "CINEUM AURORE",
+          "score": 9,
+          "grand_theatre_gala": false
+        },
+        {
+          "idproj": "30q5/+dVKNA=",
+          "title": "MOULIN",
+          "start": "8:45 am",
+          "venue": "CINEUM IMAX",
+          "score": 8,
+          "grand_theatre_gala": false
+        },
+        {
+          "idproj": "PIuErCLSYDE=",
+          "title": "FULL PHIL",
+          "start": "5:00 pm",
+          "venue": "CINEUM AURORE",
+          "score": 8,
+          "grand_theatre_gala": false
+        }
+      ]
     }
   },
   "source": "dashboard",
-  "date": "2026-05-17"
+  "date": "2026-05-18"
 }
