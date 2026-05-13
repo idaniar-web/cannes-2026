@@ -1158,7 +1158,7 @@ async function fetchWishlistSha(token) {
 
 async function putWishlist(payload, token, sha) {
   const body = {
-    message: `chore: update wishlist for ${payload.date}`,
+    message: `chore: update wishlist for ${payload.date || "(all)"}`,
     content: btoa(unescape(encodeURIComponent(JSON.stringify(payload, null, 2)))),
     branch: WISHLIST_BRANCH,
   };
@@ -1176,6 +1176,42 @@ async function putWishlist(payload, token, sha) {
     throw new Error(`PUT contents: HTTP ${r.status} — ${text.slice(0, 200)}`);
   }
   return r.json();
+}
+
+async function fetchWishlistBody(token) {
+  const r = await fetch(
+    `https://api.github.com/repos/${WISHLIST_REPO}/contents/${WISHLIST_PATH}?ref=${WISHLIST_BRANCH}`,
+    { headers: { 'Accept': 'application/vnd.github+json',
+                 'Authorization': `Bearer ${token}` } }
+  );
+  if (r.status === 404) return { sha: null, parsed: null };
+  if (!r.ok) throw new Error(`GET contents: HTTP ${r.status}`);
+  const body = await r.json();
+  let parsed = null;
+  try {
+    parsed = JSON.parse(decodeURIComponent(escape(atob(body.content.replace(/\n/g, '')))));
+  } catch (e) { parsed = null; }
+  return { sha: body.sha, parsed };
+}
+
+function mergeWishlist(existing, date, picks) {
+  // New shape: { updated_at, by_date: { "YYYY-MM-DD": { generated_at, screenings } } }
+  // Migrate from legacy single-day shape if we find it.
+  let merged = { updated_at: new Date().toISOString(), by_date: {} };
+  if (existing && existing.by_date) {
+    merged.by_date = { ...existing.by_date };
+  } else if (existing && existing.date && existing.screenings) {
+    merged.by_date[existing.date] = {
+      generated_at: existing.generated_at,
+      screenings: existing.screenings,
+    };
+  }
+  merged.by_date[date] = {
+    generated_at: new Date().toISOString(),
+    screenings: picks,
+  };
+  merged.updated_at = new Date().toISOString();
+  return merged;
 }
 
 function openWishlistModal() {
@@ -1200,6 +1236,8 @@ function openWishlistModal() {
 
     <h4>Preview <span style="text-transform:none;letter-spacing:0;color:var(--muted);">(generated from your My Plan picks)</span></h4>
     <div id="wl-preview" style="background:var(--surface-2);border-radius:8px;padding:8px;max-height:240px;overflow-y:auto;"></div>
+
+    <div id="wl-existing" style="margin-top:10px;font-size:11px;color:var(--muted);"></div>
 
     <h4>GitHub token</h4>
     <div style="display:flex;gap:6px;">
@@ -1246,6 +1284,32 @@ function openWishlistModal() {
 
   const savedPat = localStorage.getItem('github_pat');
   if (savedPat) document.getElementById('wl-token').value = savedPat;
+
+  // Show what's already in the repo so the user knows which days are live.
+  refreshExistingSummary().catch(() => {});
+}
+
+async function refreshExistingSummary() {
+  const el = document.getElementById('wl-existing');
+  if (!el) return;
+  try {
+    const r = await fetch(
+      `https://raw.githubusercontent.com/${WISHLIST_REPO}/${WISHLIST_BRANCH}/${WISHLIST_PATH}?cb=${Date.now()}`,
+      { cache: 'no-store' }
+    );
+    if (!r.ok) { el.textContent = `No wishlist committed yet.`; return; }
+    const body = await r.json();
+    if (body.by_date) {
+      const days = Object.keys(body.by_date).sort();
+      el.innerHTML = `Current wishlist covers: ${days.map(d =>
+        `<b>${d}</b> (${body.by_date[d].screenings.length})`).join(' · ')}`;
+    } else if (body.date) {
+      el.innerHTML = `Current wishlist (legacy single-day): <b>${body.date}</b> (${(body.screenings || []).length}).
+        Saving will migrate to multi-day format.`;
+    }
+  } catch (e) {
+    el.textContent = `Could not read current wishlist (${e.message}).`;
+  }
 }
 
 function clearPat() {
@@ -1278,23 +1342,21 @@ async function submitWishlist() {
     score: p.score,
     grand_theatre_gala: p.grand_theatre_gala,
   }));
-  const payload = {
-    date,
-    generated_at: new Date().toISOString(),
-    source: 'dashboard',
-    screenings,
-  };
 
   btn.disabled = true;
-  statusEl.innerHTML = '<span style="color:var(--muted);">Fetching current file SHA…</span>';
+  statusEl.innerHTML = '<span style="color:var(--muted);">Fetching current wishlist…</span>';
   try {
-    const sha = await fetchWishlistSha(token);
-    statusEl.innerHTML = '<span style="color:var(--muted);">Committing…</span>';
-    const result = await putWishlist(payload, token, sha);
+    const { sha, parsed } = await fetchWishlistBody(token);
+    const merged = mergeWishlist(parsed, date, screenings);
+    merged.source = 'dashboard';
+    statusEl.innerHTML = '<span style="color:var(--muted);">Committing merged wishlist…</span>';
+    const result = await putWishlist({ ...merged, date }, token, sha);
     localStorage.setItem('github_pat', token);
     const commitSha = result?.commit?.sha?.slice(0, 7) || '?';
+    const totalDays = Object.keys(merged.by_date).length;
     statusEl.innerHTML = `<span style="color:var(--good);">
-      ✅ Saved · commit ${commitSha} · ${screenings.length} pick${screenings.length === 1 ? '' : 's'}.
+      ✅ Saved ${date} · commit ${commitSha} · ${screenings.length} pick${screenings.length === 1 ? '' : 's'}
+      · ${totalDays} day${totalDays === 1 ? '' : 's'} total.
       The bookmarklet and extensions will pick it up on next click.
     </span>`;
   } catch (e) {
