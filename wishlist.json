@@ -1,0 +1,47 @@
+{
+  "date": "2026-05-18",
+  "generated_at": "2026-05-13T12:42:01+00:00",
+  "min_score": 7.0,
+  "screenings": [
+    {
+      "idproj": "uq4bZ0NWdH4=",
+      "title": "HER PRIVATE HELL",
+      "start": "10:30 pm",
+      "venue": "GRAND THÉÂTRE LUMIÈRE",
+      "score": 9.0,
+      "grand_theatre_gala": true
+    },
+    {
+      "idproj": "lVfG5wfUSFw=",
+      "title": "FJORD",
+      "start": "7:00 pm",
+      "venue": "GRAND THÉÂTRE LUMIÈRE",
+      "score": 8.5,
+      "grand_theatre_gala": true
+    },
+    {
+      "idproj": "5lpRaC4n9wQ=",
+      "title": "HOPE",
+      "start": "11:30 am",
+      "venue": "GRAND THÉÂTRE LUMIÈRE",
+      "score": 9.5,
+      "grand_theatre_gala": false
+    },
+    {
+      "idproj": "wjBXS47UMqw=",
+      "title": "L'INCONNUE (THE UNKNOWN)",
+      "start": "3:30 pm",
+      "venue": "GRAND THÉÂTRE LUMIÈRE",
+      "score": 9.5,
+      "grand_theatre_gala": false
+    },
+    {
+      "idproj": "7eeXFl7O+hY=",
+      "title": "SHEEP IN THE BOX",
+      "start": "8:45 am",
+      "venue": "CINEUM AURORE",
+      "score": 8.0,
+      "grand_theatre_gala": false
+    }
+  ]
+}

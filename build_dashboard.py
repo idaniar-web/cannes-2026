@@ -335,10 +335,18 @@ def main():
             })
         slots_by_day[date] = simple
 
+    # Bundle idproj map (from cannes-watcher harvest) so the dashboard can
+    # resolve each schedule id -> booking idproj for wishlist generation.
+    idproj_map = {}
+    idproj_path = Path('idproj_map.json')
+    if idproj_path.exists():
+        idproj_map = json.loads(idproj_path.read_text())
+
     data = {
         'schedule': schedule,
         'slots': slots_by_day,
         'section_label': SECTION_LABEL,
+        'idproj_map': idproj_map,
     }
 
     Path('dashboard_data.json').write_text(

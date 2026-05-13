@@ -821,6 +821,7 @@ function renderSummary() {
       <div class="metric"><b>${avg.toFixed(1)}</b><small>avg score</small></div>
       <div class="spacer"></div>
       <button onclick="exportPlan()">Export full plan</button>
+      <button onclick="openWishlistModal()" style="background: var(--accent); color: #0d0d10; border-color: var(--accent); font-weight: 700;">💾 Save wishlist</button>
     </div>
     <div class="summary-tab">
   `;
@@ -1085,6 +1086,223 @@ function render() {
   }
 }
 render();
+
+// ============ Wishlist save =============
+const WISHLIST_REPO = 'idaniar-web/cannes-2026';
+const WISHLIST_PATH = 'wishlist.json';
+const WISHLIST_BRANCH = 'main';
+
+function computeTargetDay() {
+  // today+4 in Europe/Paris.
+  const s = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Europe/Paris',
+    year: 'numeric', month: '2-digit', day: '2-digit',
+  }).format(new Date());
+  const [y, m, d] = s.split('-').map(Number);
+  const dt = new Date(Date.UTC(y, m - 1, d));
+  dt.setUTCDate(dt.getUTCDate() + 4);
+  return dt.toISOString().slice(0, 10);
+}
+
+function buildWishlistForDay(date) {
+  const slots = DATA.slots[date] || [];
+  const idprojMap = DATA.idproj_map || {};
+  const picks = [];
+  const seen = new Set();
+  slots.forEach((sl, i) => {
+    const scId = pickedForSlot(date, sl, i);
+    const sc = screeningById(date, scId);
+    if (!sc) return;
+    const mapped = idprojMap[sc.id];
+    if (!mapped) return;
+    if (seen.has(mapped.idproj)) return;
+    seen.add(mapped.idproj);
+    picks.push({
+      idproj: mapped.idproj,
+      title: sc.title,
+      start: sc.start,
+      venue: sc.venue,
+      score: sc.meta.score,
+      grand_theatre_gala: !!mapped.grand_theatre_gala,
+      start_minutes: sc.start_minutes,
+      end_minutes: sc.end_minutes,
+      id: sc.id,
+    });
+  });
+  picks.sort((a, b) => {
+    if (a.grand_theatre_gala && !b.grand_theatre_gala) return -1;
+    if (!a.grand_theatre_gala && b.grand_theatre_gala) return 1;
+    if (b.score !== a.score) return b.score - a.score;
+    return (a.start_minutes || 0) - (b.start_minutes || 0);
+  });
+  const kept = [];
+  for (const p of picks) {
+    const conflict = kept.some(k =>
+      p.start_minutes < k.end_minutes && k.start_minutes < p.end_minutes);
+    if (!conflict) kept.push(p);
+  }
+  return kept;
+}
+
+async function fetchWishlistSha(token) {
+  const r = await fetch(
+    `https://api.github.com/repos/${WISHLIST_REPO}/contents/${WISHLIST_PATH}?ref=${WISHLIST_BRANCH}`,
+    { headers: { 'Accept': 'application/vnd.github+json',
+                 'Authorization': `Bearer ${token}` } }
+  );
+  if (r.status === 404) return null;
+  if (!r.ok) throw new Error(`GET contents: HTTP ${r.status}`);
+  const body = await r.json();
+  return body.sha;
+}
+
+async function putWishlist(payload, token, sha) {
+  const body = {
+    message: `chore: update wishlist for ${payload.date}`,
+    content: btoa(unescape(encodeURIComponent(JSON.stringify(payload, null, 2)))),
+    branch: WISHLIST_BRANCH,
+  };
+  if (sha) body.sha = sha;
+  const r = await fetch(
+    `https://api.github.com/repos/${WISHLIST_REPO}/contents/${WISHLIST_PATH}`,
+    { method: 'PUT',
+      headers: { 'Accept': 'application/vnd.github+json',
+                 'Authorization': `Bearer ${token}`,
+                 'Content-Type': 'application/json' },
+      body: JSON.stringify(body) }
+  );
+  if (!r.ok) {
+    const text = await r.text();
+    throw new Error(`PUT contents: HTTP ${r.status} — ${text.slice(0, 200)}`);
+  }
+  return r.json();
+}
+
+function openWishlistModal() {
+  const modal = document.getElementById('modal-content');
+  const target = computeTargetDay();
+  const hasDay = (DATA.slots[target] && DATA.slots[target].length > 0);
+  const fallbackDay = hasDay ? target : Object.keys(DATA.slots).sort()[0];
+  const allDays = Object.keys(DATA.slots).sort();
+
+  modal.innerHTML = `
+    <button class="close" onclick="document.getElementById('modal').classList.remove('open')">×</button>
+    <h2>💾 Save wishlist</h2>
+    <div class="director-line">
+      Commits <code style="background:var(--surface-2);padding:2px 6px;border-radius:4px;">wishlist.json</code>
+      to <b>${WISHLIST_REPO}</b>. The bookmarklet and extensions fetch it live from here.
+    </div>
+
+    <h4>Target day</h4>
+    <select id="wl-date" style="width:100%;background:var(--bg);color:var(--text);border:1px solid var(--border);padding:8px;border-radius:6px;font-size:13px;font-family:inherit;">
+      ${allDays.map(d => `<option value="${d}"${d === fallbackDay ? ' selected' : ''}>${d}${d === target ? ' (today+4)' : ''}</option>`).join('')}
+    </select>
+
+    <h4>Preview <span style="text-transform:none;letter-spacing:0;color:var(--muted);">(generated from your My Plan picks)</span></h4>
+    <div id="wl-preview" style="background:var(--surface-2);border-radius:8px;padding:8px;max-height:240px;overflow-y:auto;"></div>
+
+    <h4>GitHub token</h4>
+    <div style="display:flex;gap:6px;">
+      <input id="wl-token" type="password" placeholder="ghp_..." style="flex:1;background:var(--bg);color:var(--text);border:1px solid var(--border);padding:8px;border-radius:6px;font-size:13px;"/>
+      <button onclick="clearPat()" style="background:var(--surface-2);border:1px solid var(--border);color:var(--muted);padding:0 10px;">Clear</button>
+    </div>
+    <div style="color:var(--muted);font-size:11px;margin-top:4px;">
+      Fine-grained PAT scoped to <b>${WISHLIST_REPO}</b> → <b>Contents: Read and write</b>. Stored in localStorage.
+      <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" style="color:var(--accent);">Create one →</a>
+    </div>
+
+    <div style="margin-top:16px;display:flex;gap:8px;justify-content:flex-end;">
+      <button onclick="document.getElementById('modal').classList.remove('open')" style="background:var(--surface-2);border:1px solid var(--border);color:var(--text);">Cancel</button>
+      <button onclick="submitWishlist()" id="wl-submit" style="background:var(--accent);color:#0d0d10;font-weight:700;">💾 Commit wishlist</button>
+    </div>
+
+    <div id="wl-status" style="margin-top:10px;font-size:12px;"></div>
+  `;
+  document.getElementById('modal').classList.add('open');
+
+  const sel = document.getElementById('wl-date');
+  const refresh = () => {
+    const d = sel.value;
+    const picks = buildWishlistForDay(d);
+    const prev = document.getElementById('wl-preview');
+    if (picks.length === 0) {
+      prev.innerHTML = `<div style="color:var(--muted);padding:16px;text-align:center;">
+        No bookable picks for ${d}. Pick films in the Planner first, or confirm the id map has entries for this date.
+      </div>`;
+      return;
+    }
+    prev.innerHTML = picks.map(p => `
+      <div style="padding:6px 8px;border-bottom:1px solid var(--border);font-size:12px;display:flex;gap:8px;align-items:center;">
+        <span>${p.grand_theatre_gala ? '🎭' : '·'}</span>
+        <span style="flex:1;"><b>${escapeHtml(p.title)}</b>
+          <span style="color:var(--muted);"> · ${p.start} · ${escapeHtml(p.venue)}</span>
+        </span>
+        <span class="score-badge ${scoreClass(p.score)}" style="padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700;">${p.score}</span>
+      </div>
+    `).join('');
+  };
+  sel.onchange = refresh;
+  refresh();
+
+  const savedPat = localStorage.getItem('github_pat');
+  if (savedPat) document.getElementById('wl-token').value = savedPat;
+}
+
+function clearPat() {
+  localStorage.removeItem('github_pat');
+  document.getElementById('wl-token').value = '';
+  const s = document.getElementById('wl-status');
+  if (s) s.innerHTML = '<span style="color:var(--muted);">Token cleared.</span>';
+}
+
+async function submitWishlist() {
+  const date = document.getElementById('wl-date').value;
+  const token = document.getElementById('wl-token').value.trim();
+  const statusEl = document.getElementById('wl-status');
+  const btn = document.getElementById('wl-submit');
+
+  if (!token) {
+    statusEl.innerHTML = '<span style="color:var(--bad);">Enter a GitHub token first.</span>';
+    return;
+  }
+  const picks = buildWishlistForDay(date);
+  if (picks.length === 0) {
+    statusEl.innerHTML = '<span style="color:var(--bad);">No picks for this day — nothing to save.</span>';
+    return;
+  }
+  const screenings = picks.map(p => ({
+    idproj: p.idproj,
+    title: p.title,
+    start: p.start,
+    venue: p.venue,
+    score: p.score,
+    grand_theatre_gala: p.grand_theatre_gala,
+  }));
+  const payload = {
+    date,
+    generated_at: new Date().toISOString(),
+    source: 'dashboard',
+    screenings,
+  };
+
+  btn.disabled = true;
+  statusEl.innerHTML = '<span style="color:var(--muted);">Fetching current file SHA…</span>';
+  try {
+    const sha = await fetchWishlistSha(token);
+    statusEl.innerHTML = '<span style="color:var(--muted);">Committing…</span>';
+    const result = await putWishlist(payload, token, sha);
+    localStorage.setItem('github_pat', token);
+    const commitSha = result?.commit?.sha?.slice(0, 7) || '?';
+    statusEl.innerHTML = `<span style="color:var(--good);">
+      ✅ Saved · commit ${commitSha} · ${screenings.length} pick${screenings.length === 1 ? '' : 's'}.
+      The bookmarklet and extensions will pick it up on next click.
+    </span>`;
+  } catch (e) {
+    statusEl.innerHTML = `<span style="color:var(--bad);">❌ ${escapeHtml(e.message)}</span>`;
+  } finally {
+    btn.disabled = false;
+  }
+}
 </script>
 
 </body>
