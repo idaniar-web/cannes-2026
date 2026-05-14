@@ -138,16 +138,6 @@
         <span class="lab">idproj</span>
         <input id="add-idproj" type="text" placeholder="e.g. Jfu6YKcXhM4=" />
       </label>
-      <div class="row">
-        <label>
-          <span class="lab">Title (optional)</span>
-          <input id="add-title" type="text" placeholder="for display only" />
-        </label>
-        <label>
-          <span class="lab">Date · time · venue (optional)</span>
-          <input id="add-meta" type="text" placeholder="2026-05-17 · 9:30 pm · GTL" />
-        </label>
-      </div>
       <div class="checks">
         <label><input type="checkbox" id="add-ab" checked /> auto-book</label>
         <label><input type="checkbox" id="add-as" checked /> allow swap</label>
@@ -285,8 +275,6 @@ async function addItem() {
   const email = $('add-email').value.trim();
   const password = $('add-pwd').value;
   const idproj = $('add-idproj').value.trim();
-  const title = $('add-title').value.trim();
-  const meta = $('add-meta').value.trim();
   const auto_book = $('add-ab').checked;
   const allow_swap = $('add-as').checked;
 
@@ -296,30 +284,22 @@ async function addItem() {
     return;
   }
 
-  // Best-effort parse of "2026-05-17 · 9:30 pm · GTL"
-  let date = '', start = '', venue = '';
-  if (meta) {
-    const parts = meta.split(/[·|/]+/).map(s => s.trim()).filter(Boolean);
-    if (parts.length >= 1) date = parts[0];
-    if (parts.length >= 2) start = parts[1];
-    if (parts.length >= 3) venue = parts.slice(2).join(' · ');
-  }
-
   $('add-btn').disabled = true;
-  $('add-status').textContent = 'Verifying Cannes login (this takes a few seconds)…';
+  $('add-status').textContent = 'Verifying login & fetching screening details (a few seconds)…';
   $('add-status').className = 'status';
   try {
-    await api('add', {
+    const result = await api('add', {
       cannes_email: email, cannes_password: password,
-      idproj, title, date, start, venue,
+      idproj,
       auto_book, allow_swap,
     });
-    $('add-status').textContent = `✅ Added.`;
+    const fetched = result.fetched_title
+      ? ` (${result.fetched_title} · ${result.fetched_date || '?'} ${result.fetched_start || ''})`
+      : '';
+    $('add-status').textContent = `✅ Added${fetched}.`;
     $('add-status').className = 'status ok';
     $('add-pwd').value = '';
     $('add-idproj').value = '';
-    $('add-title').value = '';
-    $('add-meta').value = '';
     refreshList();
   } catch (e) {
     $('add-status').textContent = '❌ ' + e.message;
