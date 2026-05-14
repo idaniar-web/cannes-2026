@@ -1600,7 +1600,9 @@ function wlistFetch() {
     previewEl.innerHTML = `<span style="color:var(--warn);">Already on the watchlist: <b>${escapeHtml(sc.title)}</b></span>`;
     return;
   }
-  // Show preview + Add button.
+  // Stash the candidate; click handler reads from this slot. Keeps the
+  // (possibly apostrophe-containing) title out of the inline onclick HTML.
+  window.__wlistPending = sc;
   previewEl.innerHTML = `
     <div style="background:var(--surface-2);padding:10px;border-radius:6px;display:flex;justify-content:space-between;align-items:center;gap:10px;">
       <div>
@@ -1612,10 +1614,17 @@ function wlistFetch() {
           ${sc.score ? ` · score ${sc.score}` : ''}
         </div>
       </div>
-      <button onclick='wlistAdd(${JSON.stringify(sc).replace(/'/g, "\\'")})'
+      <button id="wlist-add-btn"
               style="background:var(--accent);color:#0d0d10;font-weight:700;">+ Add</button>
     </div>
   `;
+  // Attach the listener directly — avoids any inline-attribute escaping headaches.
+  document.getElementById('wlist-add-btn').addEventListener('click', () => {
+    if (window.__wlistPending) {
+      wlistAdd(window.__wlistPending);
+      window.__wlistPending = null;
+    }
+  });
 }
 
 function wlistAdd(sc) {
