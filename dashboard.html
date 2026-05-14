@@ -1451,23 +1451,28 @@ function findScreeningByIdproj(idproj) {
   return null;
 }
 
-async function renderWatchlist() {
+async function renderWatchlist(skipFetch = false) {
   document.getElementById('sub-nav').innerHTML = '';
   const main = document.getElementById('main-content');
-  main.innerHTML = '<div class="summary"><div class="metric">Loading watchlist…</div></div>';
+  if (!skipFetch) {
+    main.innerHTML = '<div class="summary"><div class="metric">Loading watchlist…</div></div>';
 
-  let wl;
-  try {
-    wl = await fetchLiveWatchlist();
-  } catch (e) {
-    main.innerHTML = `<div class="summary"><div style="color:var(--bad);">
-      Failed to load watchlist.json: ${escapeHtml(e.message)}</div></div>`;
-    return;
+    let wl;
+    try {
+      wl = await fetchLiveWatchlist();
+    } catch (e) {
+      main.innerHTML = `<div class="summary"><div style="color:var(--bad);">
+        Failed to load watchlist.json: ${escapeHtml(e.message)}</div></div>`;
+      return;
+    }
+    WATCHLIST_STATE = {
+      items: wl.items || [],
+      updated_at: wl.updated_at || null,
+    };
   }
-  WATCHLIST_STATE = {
-    items: wl.items || [],
-    updated_at: wl.updated_at || null,
-  };
+  if (!WATCHLIST_STATE) {
+    WATCHLIST_STATE = { items: [], updated_at: null };
+  }
 
   // Date-window indicator: today..today+4 in Paris.
   const todayParis = (() => {
@@ -1647,12 +1652,12 @@ function wlistAdd(sc) {
   document.getElementById('wlist-input').value = '';
   document.getElementById('wlist-preview').innerHTML =
     `<span style="color:var(--good);">Added "<b>${escapeHtml(sc.title)}</b>". Click 💾 Save watchlist to commit.</span>`;
-  renderWatchlist();
+  renderWatchlist(true);
 }
 
 function wlistRemove(idproj) {
   WATCHLIST_STATE.items = WATCHLIST_STATE.items.filter(i => i.idproj !== idproj);
-  renderWatchlist();
+  renderWatchlist(true);
 }
 
 function openWatchlistSaveModal() {
