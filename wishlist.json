@@ -1,8 +1,9 @@
 {
-  "updated_at": "2026-05-14T23:29:17+00:00",
+  "updated_at": "2026-05-14T23:51:07.542Z",
+  "source": "dashboard",
   "by_date": {
     "2026-05-17": {
-      "generated_at": "2026-05-13T13:54:39.932Z",
+      "generated_at": "2026-05-14T23:51:07.542Z",
       "screenings": [
         {
           "idproj": "Jfu6YKcXhM4=",
@@ -31,7 +32,7 @@
       ]
     },
     "2026-05-18": {
-      "generated_at": "2026-05-13T13:59:49.736Z",
+      "generated_at": "2026-05-14T23:51:07.542Z",
       "screenings": [
         {
           "idproj": "uq4bZ0NWdH4=",
@@ -84,7 +85,7 @@
       ]
     },
     "2026-05-19": {
-      "generated_at": "2026-05-14T23:29:17+00:00",
+      "generated_at": "2026-05-14T23:51:07.542Z",
       "screenings": [
         {
           "idproj": "2pqSXzpt0qU=",
@@ -117,18 +118,8 @@
           "venue": "GRAND THÉÂTRE LUMIÈRE",
           "score": 8.5,
           "grand_theatre_gala": false
-        },
-        {
-          "idproj": "q6e0KfcVwwc=",
-          "title": "Conférence de presse L'INCONNUE ARTHUR HARARI En Compétition - Longs mét",
-          "start": "10:15 am",
-          "venue": "",
-          "score": 0.0,
-          "grand_theatre_gala": false
         }
       ]
     }
-  },
-  "source": "dashboard",
-  "date": "2026-05-19"
+  }
 }
