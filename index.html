@@ -1388,9 +1388,9 @@ async function submitWishlist() {
 }
 
 // ============ Control panel =============
-const CONFIG_REPO = 'idaniar-web/cannes-watcher';
+const CONFIG_REPO = 'idaniar-web/cannes-2026';
 const CONFIG_PATH = 'config.json';
-const CONFIG_BRANCH = 'mainline';
+const CONFIG_BRANCH = 'main';
 const CONFIG_RAW_URL =
   `https://raw.githubusercontent.com/${CONFIG_REPO}/${CONFIG_BRANCH}/${CONFIG_PATH}`;
 
@@ -1658,15 +1658,8 @@ function openControlSaveModal() {
   `;
   document.getElementById('modal').classList.add('open');
 
-  // Default to the watcher-repo token if the user already saved one.
-  const savedTok = localStorage.getItem('github_pat_watcher');
+  const savedTok = localStorage.getItem('github_pat');
   if (savedTok) document.getElementById('ctl-token').value = savedTok;
-  else {
-    // Fall back to the wishlist PAT (cannes-2026 only); won't work for
-    // cannes-watcher. User will need to enter a new one.
-    const pat = localStorage.getItem('github_pat');
-    if (pat) document.getElementById('ctl-token').value = pat;
-  }
 }
 
 async function submitControl() {
@@ -1692,7 +1685,7 @@ async function submitControl() {
         throw e;
       }
     }
-    localStorage.setItem('github_pat_watcher', token);
+    localStorage.setItem('github_pat', token);
     const commitSha = result?.commit?.sha?.slice(0, 7) || '?';
     statusEl.innerHTML = `<span style="color:var(--good);">
       ✅ Saved · commit ${commitSha}. Lambda will pick up within ~60s.
