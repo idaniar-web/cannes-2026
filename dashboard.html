@@ -551,6 +551,7 @@
     <button class="main-tab" data-tab="summary">📋 My Plan</button>
     <button class="main-tab" data-tab="competition">🏆 Competition Tracker</button>
     <button class="main-tab" data-tab="lookup">🔍 Lookup</button>
+    <button class="main-tab" data-tab="watchlist">👁 Watchlist</button>
     <button class="main-tab" data-tab="control">⚙️ Control</button>
   </div>
   <div id="sub-nav"></div>
@@ -1084,6 +1085,8 @@ function render() {
     renderCompetition();
   } else if (state.tab === 'lookup') {
     renderLookup();
+  } else if (state.tab === 'watchlist') {
+    renderWatchlist();
   } else if (state.tab === 'control') {
     renderControl();
   }
@@ -1380,6 +1383,335 @@ async function submitWishlist() {
     </span>`;
     // Refresh the summary footer so the user sees what's now live.
     refreshExistingSummary().catch(() => {});
+  } catch (e) {
+    statusEl.innerHTML = `<span style="color:var(--bad);">❌ ${escapeHtml(e.message)}</span>`;
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+// ============ Watchlist =============
+const WATCHLIST_REPO = 'idaniar-web/cannes-2026';
+const WATCHLIST_PATH = 'watchlist.json';
+const WATCHLIST_BRANCH = 'main';
+const WATCHLIST_RAW_URL =
+  `https://raw.githubusercontent.com/${WATCHLIST_REPO}/${WATCHLIST_BRANCH}/${WATCHLIST_PATH}`;
+
+let WATCHLIST_STATE = null;
+
+async function fetchLiveWatchlist() {
+  const r = await fetch(WATCHLIST_RAW_URL + `?cb=${Date.now()}`, { cache: 'no-store' });
+  if (!r.ok) throw new Error(`GET watchlist.json: HTTP ${r.status}`);
+  return r.json();
+}
+
+async function fetchWatchlistSha(token) {
+  const r = await fetch(
+    `https://api.github.com/repos/${WATCHLIST_REPO}/contents/${WATCHLIST_PATH}?ref=${WATCHLIST_BRANCH}`,
+    { headers: { 'Accept': 'application/vnd.github+json',
+                 'Authorization': `Bearer ${token}` } }
+  );
+  if (r.status === 404) return null;
+  if (!r.ok) throw new Error(`GET contents: HTTP ${r.status}`);
+  return (await r.json()).sha;
+}
+
+async function putWatchlist(payload, token, sha) {
+  const body = {
+    message: 'chore: update watchlist',
+    content: btoa(unescape(encodeURIComponent(JSON.stringify(payload, null, 2)))),
+    branch: WATCHLIST_BRANCH,
+  };
+  if (sha) body.sha = sha;
+  const r = await fetch(
+    `https://api.github.com/repos/${WATCHLIST_REPO}/contents/${WATCHLIST_PATH}`,
+    { method: 'PUT',
+      headers: { 'Accept': 'application/vnd.github+json',
+                 'Authorization': `Bearer ${token}`,
+                 'Content-Type': 'application/json' },
+      body: JSON.stringify(body) }
+  );
+  if (!r.ok) {
+    const text = await r.text();
+    throw new Error(`PUT contents: HTTP ${r.status} — ${text.slice(0, 200)}`);
+  }
+  return r.json();
+}
+
+function findScreeningByIdproj(idproj) {
+  // idproj_map.json is keyed by schedule_id, but we want to find by idproj.
+  // The idproj input might be URL-encoded (%3D for '=') so try both forms.
+  const map = DATA.idproj_map || {};
+  const decoded = decodeURIComponent(idproj.trim());
+  for (const [sid, v] of Object.entries(map)) {
+    if (v.idproj === decoded || v.idproj === idproj.trim()) {
+      return { ...v, schedule_id: sid };
+    }
+  }
+  return null;
+}
+
+async function renderWatchlist() {
+  document.getElementById('sub-nav').innerHTML = '';
+  const main = document.getElementById('main-content');
+  main.innerHTML = '<div class="summary"><div class="metric">Loading watchlist…</div></div>';
+
+  let wl;
+  try {
+    wl = await fetchLiveWatchlist();
+  } catch (e) {
+    main.innerHTML = `<div class="summary"><div style="color:var(--bad);">
+      Failed to load watchlist.json: ${escapeHtml(e.message)}</div></div>`;
+    return;
+  }
+  WATCHLIST_STATE = {
+    items: wl.items || [],
+    updated_at: wl.updated_at || null,
+  };
+
+  // Date-window indicator: today..today+4 in Paris.
+  const todayParis = (() => {
+    const s = new Intl.DateTimeFormat('en-CA',
+      { timeZone: 'Europe/Paris', year: 'numeric', month: '2-digit', day: '2-digit' }
+    ).format(new Date());
+    return s;  // YYYY-MM-DD
+  })();
+  function isInWindow(date) {
+    return date >= todayParis && date <= addDays(todayParis, 4);
+  }
+  function addDays(date, n) {
+    const d = new Date(date + 'T00:00:00Z');
+    d.setUTCDate(d.getUTCDate() + n);
+    return d.toISOString().slice(0, 10);
+  }
+
+  let html = `
+    <div class="summary">
+      <div class="metric"><b>${WATCHLIST_STATE.items.length}</b><small>items watched</small></div>
+      <div class="metric"><b>${WATCHLIST_STATE.items.filter(i => i.auto_book !== false).length}</b><small>auto-book on</small></div>
+      <div class="metric"><b>${WATCHLIST_STATE.items.filter(i => isInWindow(i.date)).length}</b><small>in J−4 window</small></div>
+      <div class="spacer"></div>
+      <button onclick="openWatchlistSaveModal()"
+              style="background:var(--accent);color:#0d0d10;font-weight:700;">💾 Save watchlist</button>
+    </div>
+
+    <div class="slot">
+      <div class="slot-header"><div class="slot-main">Add screening</div></div>
+      <div class="slot-body">
+        <div style="display:flex;gap:8px;align-items:center;">
+          <input id="wlist-input" type="text" placeholder="paste idproj here (e.g. Jfu6YKcXhM4=)"
+                 style="flex:1;background:var(--bg);color:var(--text);border:1px solid var(--border);padding:8px 12px;border-radius:4px;font-size:13px;font-family:monospace;" />
+          <button onclick="wlistFetch()" class="ghost"
+                  style="background:transparent;border:1px solid var(--accent);color:var(--accent);">🔍 Fetch</button>
+        </div>
+        <div id="wlist-preview" class="muted" style="margin-top:10px;font-size:12px;"></div>
+      </div>
+    </div>
+
+    <div class="slot">
+      <div class="slot-header"><div class="slot-main">Currently watching</div></div>
+      <div class="slot-body">
+  `;
+
+  if (WATCHLIST_STATE.items.length === 0) {
+    html += `<div class="no-films">No items on the watchlist. Add one above.</div>`;
+  } else {
+    const sortedItems = [...WATCHLIST_STATE.items].sort((a, b) => {
+      if (a.date !== b.date) return a.date.localeCompare(b.date);
+      return (a.start_minutes || 0) - (b.start_minutes || 0);
+    });
+    for (const it of sortedItems) {
+      const inWindow = isInWindow(it.date);
+      const warn = !inWindow
+        ? `<span style="color:var(--warn);font-size:11px;margin-left:6px;">⚠ outside J−4 window (${it.date})</span>`
+        : '';
+      html += `
+        <div class="option" style="padding:12px;margin-bottom:8px;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
+            <div style="flex:1;">
+              <div style="font-weight:600;font-size:14px;">
+                ${it.grand_theatre_gala ? '🎭 ' : ''}${escapeHtml(it.title || '(unknown)')}${warn}
+              </div>
+              <div class="muted" style="font-size:12px;margin-top:2px;">
+                ${it.date} · ${escapeHtml(it.start || '')} · ${escapeHtml(it.venue || '')}
+              </div>
+            </div>
+            <button onclick="wlistRemove('${escapeHtml(it.idproj)}')"
+                    style="background:transparent;border:1px solid var(--border);color:var(--muted);font-size:11px;padding:4px 8px;">remove</button>
+          </div>
+          <div style="display:flex;gap:14px;margin-top:10px;font-size:12px;">
+            <label style="display:flex;gap:5px;align-items:center;">
+              <input type="checkbox" class="wlist-autobook" data-idproj="${escapeHtml(it.idproj)}"
+                     ${it.auto_book !== false ? 'checked' : ''} />
+              <span>auto-book</span>
+            </label>
+            <label style="display:flex;gap:5px;align-items:center;">
+              <input type="checkbox" class="wlist-swap" data-idproj="${escapeHtml(it.idproj)}"
+                     ${it.allow_swap !== false ? 'checked' : ''} />
+              <span>allow swap</span>
+            </label>
+            <span style="color:var(--muted);font-size:11px;margin-left:auto;font-family:monospace;">${escapeHtml(it.idproj)}</span>
+          </div>
+        </div>
+      `;
+    }
+  }
+  html += `</div></div>`;
+  main.innerHTML = html;
+
+  // Wire toggles
+  document.querySelectorAll('.wlist-autobook').forEach(cb => {
+    cb.onchange = (e) => {
+      const id = e.target.dataset.idproj;
+      const it = WATCHLIST_STATE.items.find(x => x.idproj === id);
+      if (it) it.auto_book = e.target.checked;
+    };
+  });
+  document.querySelectorAll('.wlist-swap').forEach(cb => {
+    cb.onchange = (e) => {
+      const id = e.target.dataset.idproj;
+      const it = WATCHLIST_STATE.items.find(x => x.idproj === id);
+      if (it) it.allow_swap = e.target.checked;
+    };
+  });
+  // Enter key in input field triggers fetch
+  const inp = document.getElementById('wlist-input');
+  if (inp) {
+    inp.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') wlistFetch();
+    });
+  }
+}
+
+function wlistFetch() {
+  const raw = document.getElementById('wlist-input').value.trim();
+  const previewEl = document.getElementById('wlist-preview');
+  if (!raw) {
+    previewEl.innerHTML = '<span style="color:var(--muted);">Paste an idproj first.</span>';
+    return;
+  }
+  const sc = findScreeningByIdproj(raw);
+  if (!sc) {
+    previewEl.innerHTML = `<span style="color:var(--bad);">No match for "${escapeHtml(raw)}" in the database. Check the idproj exactly as it appears in the URL (e.g. <code>Jfu6YKcXhM4=</code>).</span>`;
+    return;
+  }
+  // Already on watchlist?
+  if (WATCHLIST_STATE.items.some(i => i.idproj === sc.idproj)) {
+    previewEl.innerHTML = `<span style="color:var(--warn);">Already on the watchlist: <b>${escapeHtml(sc.title)}</b></span>`;
+    return;
+  }
+  // Show preview + Add button.
+  previewEl.innerHTML = `
+    <div style="background:var(--surface-2);padding:10px;border-radius:6px;display:flex;justify-content:space-between;align-items:center;gap:10px;">
+      <div>
+        <div style="font-weight:600;font-size:13px;color:var(--text);">
+          ${sc.grand_theatre_gala ? '🎭 ' : ''}${escapeHtml(sc.title)}
+        </div>
+        <div style="font-size:12px;margin-top:2px;">
+          ${sc.date} · ${escapeHtml(sc.start)} · ${escapeHtml(sc.venue)}
+          ${sc.score ? ` · score ${sc.score}` : ''}
+        </div>
+      </div>
+      <button onclick='wlistAdd(${JSON.stringify(sc).replace(/'/g, "\\'")})'
+              style="background:var(--accent);color:#0d0d10;font-weight:700;">+ Add</button>
+    </div>
+  `;
+}
+
+function wlistAdd(sc) {
+  WATCHLIST_STATE.items.push({
+    idproj: sc.idproj,
+    title: sc.title,
+    director: sc.director || '',
+    date: sc.date,
+    start: sc.start,
+    end: sc.end,
+    start_minutes: sc.start_minutes,
+    end_minutes: sc.end_minutes,
+    venue: sc.venue,
+    is_gala: !!sc.is_gala,
+    grand_theatre_gala: !!sc.grand_theatre_gala,
+    score: sc.score,
+    auto_book: true,
+    allow_swap: true,
+  });
+  document.getElementById('wlist-input').value = '';
+  document.getElementById('wlist-preview').innerHTML =
+    `<span style="color:var(--good);">Added "<b>${escapeHtml(sc.title)}</b>". Click 💾 Save watchlist to commit.</span>`;
+  renderWatchlist();
+}
+
+function wlistRemove(idproj) {
+  WATCHLIST_STATE.items = WATCHLIST_STATE.items.filter(i => i.idproj !== idproj);
+  renderWatchlist();
+}
+
+function openWatchlistSaveModal() {
+  const modal = document.getElementById('modal-content');
+  modal.innerHTML = `
+    <button class="close" onclick="document.getElementById('modal').classList.remove('open')">×</button>
+    <h2>💾 Save watchlist</h2>
+    <div class="director-line">
+      Commits <code style="background:var(--surface-2);padding:2px 6px;border-radius:4px;">watchlist.json</code>
+      to <b>${WATCHLIST_REPO}</b>. Lambda picks it up within ~60s.
+    </div>
+    <h4>What will be committed</h4>
+    <pre style="background:var(--surface-2);padding:10px;border-radius:6px;font-size:11px;overflow-x:auto;max-height:240px;">${escapeHtml(JSON.stringify({
+      updated_at: new Date().toISOString(),
+      items: WATCHLIST_STATE.items,
+    }, null, 2))}</pre>
+    <h4>GitHub token</h4>
+    <div style="display:flex;gap:6px;">
+      <input id="wlist-token" type="password" placeholder="github_pat_..."
+             style="flex:1;background:var(--bg);color:var(--text);border:1px solid var(--border);padding:8px;border-radius:6px;font-size:13px;" />
+    </div>
+    <div style="margin-top:16px;display:flex;gap:8px;justify-content:flex-end;">
+      <button onclick="document.getElementById('modal').classList.remove('open')" style="background:var(--surface-2);border:1px solid var(--border);color:var(--text);">Cancel</button>
+      <button onclick="submitWatchlist()" id="wlist-submit" style="background:var(--accent);color:#0d0d10;font-weight:700;">Commit watchlist</button>
+    </div>
+    <div id="wlist-status" style="margin-top:10px;font-size:12px;"></div>
+  `;
+  document.getElementById('modal').classList.add('open');
+  const savedTok = localStorage.getItem('github_pat');
+  if (savedTok) document.getElementById('wlist-token').value = savedTok;
+}
+
+async function submitWatchlist() {
+  const token = document.getElementById('wlist-token').value.trim();
+  const btn = document.getElementById('wlist-submit');
+  const statusEl = document.getElementById('wlist-status');
+  if (!token) {
+    statusEl.innerHTML = '<span style="color:var(--bad);">Enter a token first.</span>';
+    return;
+  }
+  const payload = {
+    updated_at: new Date().toISOString(),
+    items: WATCHLIST_STATE.items,
+  };
+  btn.disabled = true;
+  statusEl.innerHTML = '<span style="color:var(--muted);">Committing…</span>';
+  try {
+    let sha = await fetchWatchlistSha(token);
+    let result;
+    try {
+      result = await putWatchlist(payload, token, sha);
+    } catch (e) {
+      if (/HTTP 409/.test(e.message)) {
+        sha = await fetchWatchlistSha(token);
+        result = await putWatchlist(payload, token, sha);
+      } else {
+        throw e;
+      }
+    }
+    localStorage.setItem('github_pat', token);
+    const commitSha = result?.commit?.sha?.slice(0, 7) || '?';
+    statusEl.innerHTML = `<span style="color:var(--good);">
+      ✅ Saved · commit ${commitSha} · ${WATCHLIST_STATE.items.length} item${WATCHLIST_STATE.items.length === 1 ? '' : 's'}.
+    </span>`;
+    setTimeout(() => {
+      document.getElementById('modal').classList.remove('open');
+      renderWatchlist();
+    }, 1000);
   } catch (e) {
     statusEl.innerHTML = `<span style="color:var(--bad);">❌ ${escapeHtml(e.message)}</span>`;
   } finally {

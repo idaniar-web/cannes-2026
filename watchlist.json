@@ -1,0 +1,5 @@
+{
+  "$schema_note": "Live watchlist for the Lambda. Each entry: continuous monitoring of one idproj. Distinct from wishlist.json (which feeds the 7am batch booking extensions).",
+  "updated_at": null,
+  "items": []
+}
