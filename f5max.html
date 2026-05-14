@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>F5 Maximiser · Cannes 2026</title>
+<style>
+  :root {
+    --bg: #0d0d10;
+    --surface: #17171c;
+    --surface-2: #1f1f26;
+    --border: #2b2b33;
+    --text: #f0f0f0;
+    --muted: #8a8a94;
+    --accent: #ffcc33;
+    --good: #4ade80;
+    --warn: #fbbf24;
+    --bad: #f87171;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.45;
+    min-height: 100vh;
+  }
+  header {
+    padding: 20px 32px;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(180deg, #18181f 0%, #0d0d10 100%);
+  }
+  h1 { margin: 0 0 4px 0; font-size: 22px; letter-spacing: 0.5px; }
+  h1 span.accent { color: var(--accent); }
+  .tagline { color: var(--muted); font-size: 13px; }
+  main { padding: 24px 32px 80px; max-width: 1100px; margin: 0 auto; }
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 22px;
+    margin-bottom: 20px;
+  }
+  .panel h2 {
+    margin: 0 0 14px 0; font-size: 16px;
+    color: var(--accent); letter-spacing: 0.3px;
+  }
+  label { display: block; margin-bottom: 12px; }
+  label .lab {
+    font-size: 12px; color: var(--muted); display: block; margin-bottom: 4px;
+    text-transform: uppercase; letter-spacing: 0.4px;
+  }
+  input[type=text], input[type=email], input[type=password] {
+    width: 100%; padding: 9px 12px; font-size: 14px;
+    background: var(--bg); color: var(--text);
+    border: 1px solid var(--border); border-radius: 6px;
+    font-family: inherit;
+  }
+  input[type=text]:focus, input[type=email]:focus, input[type=password]:focus {
+    outline: none; border-color: var(--accent);
+  }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .checks { display: flex; gap: 16px; align-items: center; margin-bottom: 12px; }
+  .checks label { display: flex; gap: 6px; align-items: center; margin-bottom: 0; font-size: 13px; }
+  button {
+    background: var(--accent); color: #0d0d10; border: 0;
+    padding: 9px 20px; font-weight: 700; cursor: pointer;
+    border-radius: 6px; font-size: 13px; letter-spacing: 0.3px;
+  }
+  button:disabled { background: #999; cursor: not-allowed; }
+  button.ghost { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+  button.danger { background: transparent; color: var(--bad); border: 1px solid var(--bad); padding: 4px 10px; font-size: 11px; }
+  .status { margin-top: 10px; font-size: 12px; }
+  .status.ok { color: var(--good); }
+  .status.bad { color: var(--bad); }
+
+  .item-list { display: flex; flex-direction: column; gap: 8px; }
+  .item {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+    display: flex;
+    gap: 14px;
+    align-items: center;
+  }
+  .item .cell { flex: 1; min-width: 0; }
+  .item .ttl { font-weight: 600; font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .item .meta { color: var(--muted); font-size: 12px; }
+  .item .who { color: var(--accent); font-size: 11px; font-family: monospace; }
+  .item .badge { font-size: 11px; padding: 2px 8px; border-radius: 10px; font-weight: 700; }
+  .item .badge.full { background: #374151; color: var(--muted); }
+  .item .badge.open { background: var(--good); color: #0d0d10; }
+  .item .badge.booked { background: var(--accent); color: #0d0d10; }
+  .empty { padding: 32px; text-align: center; color: var(--muted); }
+  .info { background: var(--surface-2); padding: 12px; border-radius: 6px; font-size: 12px; color: var(--muted); margin-bottom: 12px; }
+  .info code { background: var(--bg); padding: 1px 6px; border-radius: 3px; font-size: 11px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>F5 <span class="accent">Maximiser</span></h1>
+  <div class="tagline">Continuous monitor + auto-booker for your friends' Cannes 2026 watchlists.</div>
+</header>
+
+<main>
+  <div id="lock-panel" class="panel">
+    <h2>🔒 Page password</h2>
+    <div class="info">Ask the page owner for the access password.</div>
+    <label>
+      <span class="lab">Password</span>
+      <input id="page-pwd" type="password" autocomplete="off" />
+    </label>
+    <button id="unlock-btn">Unlock</button>
+    <div id="lock-status" class="status"></div>
+  </div>
+
+  <div id="app" style="display:none">
+    <div class="panel">
+      <h2>+ Add screening to monitor</h2>
+      <div class="info">
+        Each entry uses one Cannes accreditation. The Cannes password is verified once and stored encrypted
+        (AWS SSM SecureString) so the watcher can log in. To find an idproj, open the screening on the
+        booking portal — the URL contains <code>?idproj=...</code>.
+      </div>
+      <div class="row">
+        <label>
+          <span class="lab">Cannes email</span>
+          <input id="add-email" type="email" autocomplete="off" />
+        </label>
+        <label>
+          <span class="lab">Cannes password</span>
+          <input id="add-pwd" type="password" autocomplete="off" />
+        </label>
+      </div>
+      <label>
+        <span class="lab">idproj</span>
+        <input id="add-idproj" type="text" placeholder="e.g. Jfu6YKcXhM4=" />
+      </label>
+      <div class="row">
+        <label>
+          <span class="lab">Title (optional)</span>
+          <input id="add-title" type="text" placeholder="for display only" />
+        </label>
+        <label>
+          <span class="lab">Date · time · venue (optional)</span>
+          <input id="add-meta" type="text" placeholder="2026-05-17 · 9:30 pm · GTL" />
+        </label>
+      </div>
+      <div class="checks">
+        <label><input type="checkbox" id="add-ab" checked /> auto-book</label>
+        <label><input type="checkbox" id="add-as" checked /> allow swap</label>
+        <span style="flex:1"></span>
+        <button id="add-btn">+ Add</button>
+      </div>
+      <div id="add-status" class="status"></div>
+    </div>
+
+    <div class="panel">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+        <h2 style="margin:0">👁 Combined watchlist</h2>
+        <button class="ghost" id="refresh-btn">↻ Refresh</button>
+      </div>
+      <div id="list-status" class="status"></div>
+      <div class="item-list" id="item-list"></div>
+    </div>
+  </div>
+</main>
+
+<script>
+const API = "https://z6urdvwp44fxpsptpnrrs4vdxu0jlgqh.lambda-url.us-east-1.on.aws/";
+const $ = (id) => document.getElementById(id);
+
+function escapeHtml(s) {
+  return String(s || '').replace(/[&<>"']/g, c => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  })[c]);
+}
+
+async function api(action, extra = {}) {
+  const pwd = localStorage.getItem('f5max_page_pwd');
+  if (!pwd) throw new Error("not unlocked");
+  const r = await fetch(API, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action, page_password: pwd, ...extra }),
+  });
+  const body = await r.json();
+  if (!r.ok) throw new Error(body.error || `HTTP ${r.status}`);
+  return body;
+}
+
+async function unlock() {
+  const pwd = $('page-pwd').value.trim();
+  if (!pwd) {
+    $('lock-status').textContent = 'Enter the password.';
+    $('lock-status').className = 'status bad';
+    return;
+  }
+  $('unlock-btn').disabled = true;
+  // Probe with a list call.
+  localStorage.setItem('f5max_page_pwd', pwd);
+  try {
+    await api('list');
+    $('lock-panel').style.display = 'none';
+    $('app').style.display = 'block';
+    refreshList();
+  } catch (e) {
+    localStorage.removeItem('f5max_page_pwd');
+    $('lock-status').textContent = 'Wrong password: ' + e.message;
+    $('lock-status').className = 'status bad';
+  }
+  $('unlock-btn').disabled = false;
+}
+
+async function refreshList() {
+  $('list-status').textContent = 'Loading…';
+  $('list-status').className = 'status';
+  try {
+    const data = await api('list');
+    renderList(data.items || []);
+    $('list-status').textContent = `${data.count} items.`;
+    $('list-status').className = 'status';
+  } catch (e) {
+    $('list-status').textContent = 'Failed: ' + e.message;
+    $('list-status').className = 'status bad';
+  }
+}
+
+function renderList(items) {
+  const wrap = $('item-list');
+  wrap.innerHTML = '';
+  if (items.length === 0) {
+    wrap.innerHTML = '<div class="empty">No items being monitored. Add one above.</div>';
+    return;
+  }
+  for (const it of items) {
+    const status = it.has_ticket
+      ? '<span class="badge booked">🎟 booked</span>'
+      : it.available
+        ? '<span class="badge open">OPEN</span>'
+        : '<span class="badge full">monitoring</span>';
+    const flags = [];
+    if (!it.auto_book) flags.push('notify-only');
+    if (!it.allow_swap) flags.push('no-swap');
+    const flagsHtml = flags.length ? `<span style="color:var(--warn);font-size:11px;">· ${flags.join(' · ')}</span>` : '';
+
+    const div = document.createElement('div');
+    div.className = 'item';
+    div.innerHTML = `
+      <div class="cell">
+        <div class="ttl">${escapeHtml(it.title || '(no title)')} ${flagsHtml}</div>
+        <div class="meta">
+          ${escapeHtml(it.date || '?')} · ${escapeHtml(it.start || '?')} · ${escapeHtml(it.venue || '')}
+        </div>
+        <div class="who">${escapeHtml(it.email)} · idproj=${escapeHtml(it.idproj)}</div>
+      </div>
+      ${status}
+      <button class="danger remove-btn"
+              data-email="${escapeHtml(it.email)}"
+              data-idproj="${escapeHtml(it.idproj)}">Remove</button>
+    `;
+    wrap.appendChild(div);
+  }
+  // Wire remove buttons.
+  document.querySelectorAll('.remove-btn').forEach((btn) => {
+    btn.addEventListener('click', async (e) => {
+      const email = e.target.dataset.email;
+      const idproj = e.target.dataset.idproj;
+      if (!confirm(`Remove ${idproj} for ${email}?`)) return;
+      e.target.disabled = true;
+      try {
+        await api('remove', { cannes_email: email, idproj });
+        refreshList();
+      } catch (err) {
+        alert('Remove failed: ' + err.message);
+        e.target.disabled = false;
+      }
+    });
+  });
+}
+
+async function addItem() {
+  const email = $('add-email').value.trim();
+  const password = $('add-pwd').value;
+  const idproj = $('add-idproj').value.trim();
+  const title = $('add-title').value.trim();
+  const meta = $('add-meta').value.trim();
+  const auto_book = $('add-ab').checked;
+  const allow_swap = $('add-as').checked;
+
+  if (!email || !password || !idproj) {
+    $('add-status').textContent = 'email, password, and idproj are required.';
+    $('add-status').className = 'status bad';
+    return;
+  }
+
+  // Best-effort parse of "2026-05-17 · 9:30 pm · GTL"
+  let date = '', start = '', venue = '';
+  if (meta) {
+    const parts = meta.split(/[·|/]+/).map(s => s.trim()).filter(Boolean);
+    if (parts.length >= 1) date = parts[0];
+    if (parts.length >= 2) start = parts[1];
+    if (parts.length >= 3) venue = parts.slice(2).join(' · ');
+  }
+
+  $('add-btn').disabled = true;
+  $('add-status').textContent = 'Verifying Cannes login (this takes a few seconds)…';
+  $('add-status').className = 'status';
+  try {
+    await api('add', {
+      cannes_email: email, cannes_password: password,
+      idproj, title, date, start, venue,
+      auto_book, allow_swap,
+    });
+    $('add-status').textContent = `✅ Added.`;
+    $('add-status').className = 'status ok';
+    $('add-pwd').value = '';
+    $('add-idproj').value = '';
+    $('add-title').value = '';
+    $('add-meta').value = '';
+    refreshList();
+  } catch (e) {
+    $('add-status').textContent = '❌ ' + e.message;
+    $('add-status').className = 'status bad';
+  }
+  $('add-btn').disabled = false;
+}
+
+// Wire UI
+$('unlock-btn').addEventListener('click', unlock);
+$('page-pwd').addEventListener('keydown', e => { if (e.key === 'Enter') unlock(); });
+$('add-btn').addEventListener('click', addItem);
+$('refresh-btn').addEventListener('click', refreshList);
+
+// Auto-unlock if we have a saved password.
+(async () => {
+  const saved = localStorage.getItem('f5max_page_pwd');
+  if (saved) {
+    try {
+      await api('list');
+      $('lock-panel').style.display = 'none';
+      $('app').style.display = 'block';
+      refreshList();
+    } catch (e) {
+      localStorage.removeItem('f5max_page_pwd');
+    }
+  }
+})();
+</script>
+</body>
+</html>
