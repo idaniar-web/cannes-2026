@@ -2,7 +2,10 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="theme-color" content="#0d0d10" />
 <title>F5 Maximiser · Cannes 2026</title>
 <style>
   :root {
@@ -25,52 +28,63 @@
     color: var(--text);
     line-height: 1.45;
     min-height: 100vh;
+    -webkit-text-size-adjust: 100%;
   }
   header {
-    padding: 20px 32px;
+    padding: 16px 18px;
     border-bottom: 1px solid var(--border);
     background: linear-gradient(180deg, #18181f 0%, #0d0d10 100%);
   }
   h1 { margin: 0 0 4px 0; font-size: 22px; letter-spacing: 0.5px; }
   h1 span.accent { color: var(--accent); }
   .tagline { color: var(--muted); font-size: 13px; }
-  main { padding: 24px 32px 80px; max-width: 1100px; margin: 0 auto; }
+  main { padding: 16px 14px 80px; max-width: 720px; margin: 0 auto; }
   .panel {
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 12px;
-    padding: 18px 22px;
-    margin-bottom: 20px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
   }
   .panel h2 {
-    margin: 0 0 14px 0; font-size: 16px;
+    margin: 0 0 10px 0; font-size: 15px;
     color: var(--accent); letter-spacing: 0.3px;
   }
-  label { display: block; margin-bottom: 12px; }
+  label { display: block; margin-bottom: 10px; }
   label .lab {
-    font-size: 12px; color: var(--muted); display: block; margin-bottom: 4px;
+    font-size: 11px; color: var(--muted); display: block; margin-bottom: 4px;
     text-transform: uppercase; letter-spacing: 0.4px;
   }
   input[type=text], input[type=email], input[type=password] {
-    width: 100%; padding: 9px 12px; font-size: 14px;
+    width: 100%; padding: 11px 12px; font-size: 16px;
     background: var(--bg); color: var(--text);
     border: 1px solid var(--border); border-radius: 6px;
     font-family: inherit;
+    -webkit-appearance: none;
   }
   input[type=text]:focus, input[type=email]:focus, input[type=password]:focus {
     outline: none; border-color: var(--accent);
   }
-  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .checks { display: flex; gap: 16px; align-items: center; margin-bottom: 12px; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  @media (max-width: 540px) {
+    .row { grid-template-columns: 1fr; gap: 0; }
+    main { padding: 12px 10px 60px; }
+    header { padding: 14px 16px; }
+    h1 { font-size: 19px; }
+    .tagline { font-size: 12px; }
+    .panel { padding: 12px 14px; }
+  }
+  .checks { display: flex; gap: 14px; align-items: center; margin-bottom: 10px; flex-wrap: wrap; }
   .checks label { display: flex; gap: 6px; align-items: center; margin-bottom: 0; font-size: 13px; }
   button {
     background: var(--accent); color: #0d0d10; border: 0;
-    padding: 9px 20px; font-weight: 700; cursor: pointer;
-    border-radius: 6px; font-size: 13px; letter-spacing: 0.3px;
+    padding: 11px 22px; font-weight: 700; cursor: pointer;
+    border-radius: 6px; font-size: 14px; letter-spacing: 0.3px;
+    -webkit-appearance: none;
   }
   button:disabled { background: #999; cursor: not-allowed; }
   button.ghost { background: transparent; color: var(--muted); border: 1px solid var(--border); }
-  button.danger { background: transparent; color: var(--bad); border: 1px solid var(--bad); padding: 4px 10px; font-size: 11px; }
+  button.danger { background: transparent; color: var(--bad); border: 1px solid var(--bad); padding: 5px 10px; font-size: 11px; }
   .status { margin-top: 10px; font-size: 12px; }
   .status.ok { color: var(--good); }
   .status.bad { color: var(--bad); }
@@ -80,22 +94,26 @@
     background: var(--surface-2);
     border: 1px solid var(--border);
     border-radius: 8px;
-    padding: 12px 14px;
+    padding: 10px 12px;
     display: flex;
-    gap: 14px;
+    gap: 10px;
     align-items: center;
+    flex-wrap: wrap;
   }
   .item .cell { flex: 1; min-width: 0; }
   .item .ttl { font-weight: 600; font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .item .meta { color: var(--muted); font-size: 12px; }
-  .item .who { color: var(--accent); font-size: 11px; font-family: monospace; }
-  .item .badge { font-size: 11px; padding: 2px 8px; border-radius: 10px; font-weight: 700; }
+  .item .who { color: var(--accent); font-size: 11px; font-family: monospace; word-break: break-all; }
+  .item .badge { font-size: 11px; padding: 2px 8px; border-radius: 10px; font-weight: 700; white-space: nowrap; }
   .item .badge.full { background: #374151; color: var(--muted); }
   .item .badge.open { background: var(--good); color: #0d0d10; }
   .item .badge.booked { background: var(--accent); color: #0d0d10; }
   .empty { padding: 32px; text-align: center; color: var(--muted); }
-  .info { background: var(--surface-2); padding: 12px; border-radius: 6px; font-size: 12px; color: var(--muted); margin-bottom: 12px; }
-  .info code { background: var(--bg); padding: 1px 6px; border-radius: 3px; font-size: 11px; }
+  .info { background: var(--surface-2); padding: 12px; border-radius: 6px; font-size: 13px; color: var(--text); margin-bottom: 14px; line-height: 1.55; }
+  .info code { background: var(--bg); padding: 1px 6px; border-radius: 3px; font-size: 12px; color: var(--accent); word-break: break-all; }
+  .info strong { color: var(--accent); }
+  .info ol { margin: 8px 0 4px 0; padding-left: 20px; }
+  .info ol li { margin-bottom: 6px; }
 </style>
 </head>
 <body>
@@ -107,7 +125,6 @@
 <main>
   <div id="lock-panel" class="panel">
     <h2>🔒 Page password</h2>
-    <div class="info">Ask the page owner for the access password.</div>
     <label>
       <span class="lab">Password</span>
       <input id="page-pwd" type="password" autocomplete="off" />
@@ -120,14 +137,20 @@
     <div class="panel">
       <h2>+ Add screening to monitor</h2>
       <div class="info">
-        Each entry uses one Cannes accreditation. The Cannes password is verified once and stored encrypted
-        (AWS SSM SecureString) so the watcher can log in. To find an idproj, open the screening on the
-        booking portal — the URL contains <code>?idproj=...</code>.
+        <strong>How to find the projection ID</strong>
+        <ol>
+          <li>Open the booking site and go to the screening you want.</li>
+          <li>Look at the URL in your browser. It ends with <code>?idproj=…</code>.</li>
+          <li>Copy everything after <code>?idproj=</code>.</li>
+        </ol>
+        Example URL:<br/>
+        <code>https://ticketonline2.festival-cannes.com/fiche?idproj=Jfu6YKcXhM4%3D</code><br/>
+        Projection ID = <code>Jfu6YKcXhM4=</code> (the <code>%3D</code> is just <code>=</code>; either form works).
       </div>
       <div class="row">
         <label>
           <span class="lab">Cannes email</span>
-          <input id="add-email" type="email" autocomplete="off" />
+          <input id="add-email" type="email" autocomplete="off" autocapitalize="off" />
         </label>
         <label>
           <span class="lab">Cannes password</span>
@@ -135,14 +158,22 @@
         </label>
       </div>
       <label>
-        <span class="lab">idproj</span>
-        <input id="add-idproj" type="text" placeholder="e.g. Jfu6YKcXhM4=" />
+        <span class="lab">Projection ID</span>
+        <input id="add-idproj" type="text" autocapitalize="off" autocorrect="off" placeholder="e.g. Jfu6YKcXhM4=" />
       </label>
       <div class="checks">
-        <label><input type="checkbox" id="add-ab" checked /> auto-book</label>
-        <label><input type="checkbox" id="add-as" checked /> allow swap</label>
+        <label>
+          <input type="checkbox" id="add-as" checked />
+          <span>allow swap</span>
+        </label>
         <span style="flex:1"></span>
         <button id="add-btn">+ Add</button>
+      </div>
+      <div class="info" style="margin-top:6px;margin-bottom:0;font-size:12px;">
+        <strong>What's "allow swap"?</strong> If a ticket becomes available but
+        you already hold a ticket for an overlapping screening, ticking this
+        will release your existing ticket so the new one can be booked. Untick
+        to skip booking when there's a conflict.
       </div>
       <div id="add-status" class="status"></div>
     </div>
@@ -256,7 +287,6 @@ function renderList(items) {
       status = '<span class="badge full">monitoring</span>';
     }
     const flags = [];
-    if (!it.auto_book) flags.push('notify-only');
     if (!it.allow_swap) flags.push('no-swap');
     const flagsHtml = flags.length ? `<span style="color:var(--warn);font-size:11px;">· ${flags.join(' · ')}</span>` : '';
 
@@ -299,11 +329,10 @@ async function addItem() {
   const email = $('add-email').value.trim();
   const password = $('add-pwd').value;
   const idproj = $('add-idproj').value.trim();
-  const auto_book = $('add-ab').checked;
   const allow_swap = $('add-as').checked;
 
   if (!email || !password || !idproj) {
-    $('add-status').textContent = 'email, password, and idproj are required.';
+    $('add-status').textContent = 'email, password, and projection ID are required.';
     $('add-status').className = 'status bad';
     return;
   }
@@ -315,7 +344,8 @@ async function addItem() {
     const result = await api('add', {
       cannes_email: email, cannes_password: password,
       idproj,
-      auto_book, allow_swap,
+      auto_book: true,
+      allow_swap,
     });
     const fetched = result.fetched_title
       ? ` (${result.fetched_title} · ${result.fetched_date || '?'} ${result.fetched_start || ''})`
