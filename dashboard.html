@@ -1697,6 +1697,12 @@ async function submitControl() {
     statusEl.innerHTML = `<span style="color:var(--good);">
       ✅ Saved · commit ${commitSha}. Lambda will pick up within ~60s.
     </span>`;
+    // Re-fetch and re-render so the summary header reflects the saved
+    // values (raw.githubusercontent.com is CDN-cached, so add a cache-bust).
+    setTimeout(() => {
+      document.getElementById('modal').classList.remove('open');
+      renderControl();
+    }, 1000);
   } catch (e) {
     statusEl.innerHTML = `<span style="color:var(--bad);">❌ ${escapeHtml(e.message)}</span>`;
   } finally {
