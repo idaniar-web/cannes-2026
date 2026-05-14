@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-05-13T13:59:49.736Z",
+  "updated_at": "2026-05-14T22:59:14.039Z",
   "by_date": {
     "2026-05-17": {
       "generated_at": "2026-05-13T13:54:39.932Z",
@@ -82,8 +82,61 @@
           "grand_theatre_gala": false
         }
       ]
+    },
+    "2026-05-19": {
+      "generated_at": "2026-05-14T22:59:14.039Z",
+      "screenings": [
+        {
+          "idproj": "2pqSXzpt0qU=",
+          "title": "AMARGA NAVIDAD",
+          "start": "7:00 pm",
+          "venue": "GRAND THÉÂTRE LUMIÈRE",
+          "score": 9.5,
+          "grand_theatre_gala": true
+        },
+        {
+          "idproj": "zchYY5hPu5c=",
+          "title": "DIAMOND",
+          "start": "10:00 pm",
+          "venue": "GRAND THÉÂTRE LUMIÈRE",
+          "score": 4.5,
+          "grand_theatre_gala": true
+        },
+        {
+          "idproj": "J/D9bcW03Ms=",
+          "title": "L'INCONNUE (THE UNKNOWN)",
+          "start": "8:30 am",
+          "venue": "GRAND THÉÂTRE LUMIÈRE",
+          "score": 9.5,
+          "grand_theatre_gala": false
+        },
+        {
+          "idproj": "y3LhojNT1JU=",
+          "title": "MINOTAUR",
+          "start": "3:30 pm",
+          "venue": "GRAND THÉÂTRE LUMIÈRE",
+          "score": 8.5,
+          "grand_theatre_gala": false
+        },
+        {
+          "idproj": "VJ29BU6h0TQ=",
+          "title": "EVERYTIME",
+          "start": "1:15 pm",
+          "venue": "CINEUM SALLE 3",
+          "score": 7.5,
+          "grand_theatre_gala": false
+        },
+        {
+          "idproj": "EQDsnvNGHPs=",
+          "title": "BEN'IMANA",
+          "start": "11:00 am",
+          "venue": "DEBUSSY THEATRE",
+          "score": 5,
+          "grand_theatre_gala": false
+        }
+      ]
     }
   },
   "source": "dashboard",
-  "date": "2026-05-18"
+  "date": "2026-05-19"
 }
