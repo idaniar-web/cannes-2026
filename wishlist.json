@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-05-14T22:59:14.039Z",
+  "updated_at": "2026-05-14T23:29:17+00:00",
   "by_date": {
     "2026-05-17": {
       "generated_at": "2026-05-13T13:54:39.932Z",
@@ -84,7 +84,7 @@
       ]
     },
     "2026-05-19": {
-      "generated_at": "2026-05-14T22:59:14.039Z",
+      "generated_at": "2026-05-14T23:29:17+00:00",
       "screenings": [
         {
           "idproj": "2pqSXzpt0qU=",
@@ -119,19 +119,11 @@
           "grand_theatre_gala": false
         },
         {
-          "idproj": "VJ29BU6h0TQ=",
-          "title": "EVERYTIME",
-          "start": "1:15 pm",
-          "venue": "CINEUM SALLE 3",
-          "score": 7.5,
-          "grand_theatre_gala": false
-        },
-        {
-          "idproj": "EQDsnvNGHPs=",
-          "title": "BEN'IMANA",
-          "start": "11:00 am",
-          "venue": "DEBUSSY THEATRE",
-          "score": 5,
+          "idproj": "q6e0KfcVwwc=",
+          "title": "Conférence de presse L'INCONNUE ARTHUR HARARI En Compétition - Longs mét",
+          "start": "10:15 am",
+          "venue": "",
+          "score": 0.0,
           "grand_theatre_gala": false
         }
       ]

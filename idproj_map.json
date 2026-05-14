@@ -9266,5 +9266,19 @@
     "is_gala": false,
     "score": 0.0,
     "grand_theatre_gala": false
+  },
+  "2026-05-19-073": {
+    "idproj": "q6e0KfcVwwc=",
+    "title": "Conférence de presse L'INCONNUE ARTHUR HARARI En Compétition - Longs mét",
+    "director": "",
+    "date": "2026-05-19",
+    "start": "10:15 am",
+    "end": "11:00 am",
+    "start_minutes": 615,
+    "end_minutes": 660,
+    "venue": "",
+    "is_gala": false,
+    "score": 0.0,
+    "grand_theatre_gala": false
   }
 }
