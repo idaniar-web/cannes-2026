@@ -1300,8 +1300,8 @@ async function refreshExistingSummary() {
   if (!el) return;
   try {
     const r = await fetch(
-      `https://raw.githubusercontent.com/${WISHLIST_REPO}/${WISHLIST_BRANCH}/${WISHLIST_PATH}?cb=${Date.now()}`,
-      { cache: 'no-store' }
+      `https://api.github.com/repos/${WISHLIST_REPO}/contents/${WISHLIST_PATH}?ref=${WISHLIST_BRANCH}&cb=${Date.now()}`,
+      { headers: { 'Accept': 'application/vnd.github.raw' }, cache: 'no-store' }
     );
     if (!r.ok) { el.textContent = `No wishlist committed yet.`; return; }
     const body = await r.json();
@@ -1400,7 +1400,13 @@ const WATCHLIST_RAW_URL =
 let WATCHLIST_STATE = null;
 
 async function fetchLiveWatchlist() {
-  const r = await fetch(WATCHLIST_RAW_URL + `?cb=${Date.now()}`, { cache: 'no-store' });
+  // Use the GitHub API (always fresh) rather than raw.githubusercontent.com
+  // (CDN-cached up to 5 min). The trade-off: API calls are rate-limited at
+  // 60/hour for unauthenticated requests, more than enough for our usage.
+  const r = await fetch(
+    `https://api.github.com/repos/${WATCHLIST_REPO}/contents/${WATCHLIST_PATH}?ref=${WATCHLIST_BRANCH}&cb=${Date.now()}`,
+    { headers: { 'Accept': 'application/vnd.github.raw' }, cache: 'no-store' }
+  );
   if (!r.ok) throw new Error(`GET watchlist.json: HTTP ${r.status}`);
   return r.json();
 }
@@ -1741,7 +1747,10 @@ const CONFIG_RAW_URL =
   `https://raw.githubusercontent.com/${CONFIG_REPO}/${CONFIG_BRANCH}/${CONFIG_PATH}`;
 
 async function fetchLiveConfig() {
-  const r = await fetch(CONFIG_RAW_URL + `?cb=${Date.now()}`, { cache: 'no-store' });
+  const r = await fetch(
+    `https://api.github.com/repos/${CONFIG_REPO}/contents/${CONFIG_PATH}?ref=${CONFIG_BRANCH}&cb=${Date.now()}`,
+    { headers: { 'Accept': 'application/vnd.github.raw' }, cache: 'no-store' }
+  );
   if (!r.ok) throw new Error(`GET config.json: HTTP ${r.status}`);
   return r.json();
 }
