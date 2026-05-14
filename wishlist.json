@@ -1,9 +1,9 @@
 {
-  "updated_at": "2026-05-14T23:52:07.116Z",
+  "updated_at": "2026-05-14T23:53:10.771Z",
   "source": "dashboard",
   "by_date": {
     "2026-05-17": {
-      "generated_at": "2026-05-14T23:52:07.116Z",
+      "generated_at": "2026-05-14T23:53:10.771Z",
       "screenings": [
         {
           "idproj": "Jfu6YKcXhM4=",
@@ -32,7 +32,7 @@
       ]
     },
     "2026-05-18": {
-      "generated_at": "2026-05-14T23:52:07.116Z",
+      "generated_at": "2026-05-14T23:53:10.771Z",
       "screenings": [
         {
           "idproj": "uq4bZ0NWdH4=",
@@ -85,7 +85,7 @@
       ]
     },
     "2026-05-19": {
-      "generated_at": "2026-05-14T23:52:07.116Z",
+      "generated_at": "2026-05-14T23:53:10.771Z",
       "screenings": [
         {
           "idproj": "2pqSXzpt0qU=",
@@ -117,14 +117,6 @@
           "start": "3:30 pm",
           "venue": "GRAND THÉÂTRE LUMIÈRE",
           "score": 8.5,
-          "grand_theatre_gala": false
-        },
-        {
-          "idproj": "Y+FzojqzfmM=",
-          "title": "UN CŒUR FIDÈLE",
-          "start": "11:30 am",
-          "venue": "ALEXANDRE III",
-          "score": 3,
           "grand_theatre_gala": false
         }
       ]
