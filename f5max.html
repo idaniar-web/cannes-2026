@@ -226,11 +226,35 @@ function renderList(items) {
     return;
   }
   for (const it of items) {
-    const status = it.has_ticket
-      ? '<span class="badge booked">🎟 booked</span>'
-      : it.available
-        ? '<span class="badge open">OPEN</span>'
-        : '<span class="badge full">monitoring</span>';
+    // Compute J-4 window: an item is actually pollable from today up to today+4.
+    // Anything beyond that shows a "starts <date>" hint instead of "monitoring".
+    const todayParis = (() => {
+      const s = new Intl.DateTimeFormat('en-CA', {
+        timeZone: 'Europe/Paris',
+        year: 'numeric', month: '2-digit', day: '2-digit',
+      }).format(new Date());
+      return s;  // YYYY-MM-DD
+    })();
+    function pollStartDate(itemDate) {
+      // Booking opens 4 days before. Returns the YYYY-MM-DD when polling kicks in.
+      if (!itemDate) return null;
+      const d = new Date(itemDate + 'T00:00:00Z');
+      d.setUTCDate(d.getUTCDate() - 4);
+      return d.toISOString().slice(0, 10);
+    }
+    const polls = pollStartDate(it.date);
+    const pollable = it.date && it.date >= todayParis && polls && polls <= todayParis;
+
+    let status;
+    if (it.has_ticket) {
+      status = '<span class="badge booked">🎟 booked</span>';
+    } else if (it.available) {
+      status = '<span class="badge open">OPEN</span>';
+    } else if (!pollable && it.date && it.date > todayParis) {
+      status = `<span class="badge full" title="J-4 window starts ${polls}">⏳ starts ${polls}</span>`;
+    } else {
+      status = '<span class="badge full">monitoring</span>';
+    }
     const flags = [];
     if (!it.auto_book) flags.push('notify-only');
     if (!it.allow_swap) flags.push('no-swap');
