@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-05-15T05:10:22.707Z",
+  "updated_at": "2026-05-15T05:13:54.347Z",
   "items": [
     {
       "idproj": "Tcp1LPih5xQ=",
@@ -62,6 +62,22 @@
       "is_gala": true,
       "grand_theatre_gala": true,
       "score": 4.5,
+      "auto_book": true,
+      "allow_swap": true
+    },
+    {
+      "idproj": "2pqSXzpt0qU=",
+      "title": "AMARGA NAVIDAD",
+      "director": "PEDRO ALMODÓVAR",
+      "date": "2026-05-19",
+      "start": "7:00 pm",
+      "end": "8:52 pm",
+      "start_minutes": 1140,
+      "end_minutes": 1252,
+      "venue": "GRAND THÉÂTRE LUMIÈRE",
+      "is_gala": true,
+      "grand_theatre_gala": true,
+      "score": 9.5,
       "auto_book": true,
       "allow_swap": true
     }
