@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-05-14T17:15:27.962Z",
+  "updated_at": "2026-05-15T05:09:18.223Z",
   "items": [
     {
       "idproj": "Tcp1LPih5xQ=",
@@ -48,6 +48,22 @@
       "score": 0,
       "auto_book": true,
       "allow_swap": false
+    },
+    {
+      "idproj": "y3LhojNT1JU=",
+      "title": "MINOTAUR",
+      "director": "ANDREÏ ZVIAGUINTSEV",
+      "date": "2026-05-19",
+      "start": "3:30 pm",
+      "end": "5:50 pm",
+      "start_minutes": 930,
+      "end_minutes": 1070,
+      "venue": "GRAND THÉÂTRE LUMIÈRE",
+      "is_gala": false,
+      "grand_theatre_gala": false,
+      "score": 8.5,
+      "auto_book": true,
+      "allow_swap": true
     }
   ]
 }
