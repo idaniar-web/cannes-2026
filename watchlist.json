@@ -1,22 +1,6 @@
 {
-  "updated_at": "2026-05-15T12:04:11.229Z",
+  "updated_at": "2026-05-15T16:15:15.987Z",
   "items": [
-    {
-      "idproj": "Tcp1LPih5xQ=",
-      "title": "GENTLE MONSTER MARIE KREUTZER En Compétition - Longs métrages",
-      "director": "",
-      "date": "2026-05-15",
-      "start": "10:00 pm",
-      "end": "11:54 pm",
-      "start_minutes": 1320,
-      "end_minutes": 1434,
-      "venue": "GRAND THÉÂTRE LUMIÈRE",
-      "is_gala": true,
-      "grand_theatre_gala": true,
-      "score": 0,
-      "auto_book": true,
-      "allow_swap": false
-    },
     {
       "idproj": "y3LhojNT1JU=",
       "title": "MINOTAUR",
