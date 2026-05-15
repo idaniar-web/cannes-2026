@@ -1,9 +1,9 @@
 {
-  "updated_at": "2026-05-14T23:53:10.771Z",
+  "updated_at": "2026-05-15T22:02:19.167Z",
   "source": "dashboard",
   "by_date": {
     "2026-05-17": {
-      "generated_at": "2026-05-14T23:53:10.771Z",
+      "generated_at": "2026-05-15T22:02:19.167Z",
       "screenings": [
         {
           "idproj": "Jfu6YKcXhM4=",
@@ -32,7 +32,7 @@
       ]
     },
     "2026-05-18": {
-      "generated_at": "2026-05-14T23:53:10.771Z",
+      "generated_at": "2026-05-15T22:02:19.167Z",
       "screenings": [
         {
           "idproj": "uq4bZ0NWdH4=",
@@ -85,7 +85,7 @@
       ]
     },
     "2026-05-19": {
-      "generated_at": "2026-05-14T23:53:10.771Z",
+      "generated_at": "2026-05-15T22:02:19.167Z",
       "screenings": [
         {
           "idproj": "2pqSXzpt0qU=",
@@ -118,6 +118,59 @@
           "venue": "GRAND THÉÂTRE LUMIÈRE",
           "score": 8.5,
           "grand_theatre_gala": false
+        }
+      ]
+    },
+    "2026-05-20": {
+      "generated_at": "2026-05-15T22:02:19.167Z",
+      "screenings": [
+        {
+          "idproj": "lXiY1xq9Yuw=",
+          "title": "ROMA ELASTICA",
+          "start": "12:30 am",
+          "venue": "GRAND THÉÂTRE LUMIÈRE",
+          "score": 8.5,
+          "grand_theatre_gala": false
+        },
+        {
+          "idproj": "7Ke35U+I/zA=",
+          "title": "MINOTAUR",
+          "start": "8:30 am",
+          "venue": "GRAND THÉÂTRE LUMIÈRE",
+          "score": 8.5,
+          "grand_theatre_gala": false
+        },
+        {
+          "idproj": "qD/hNF2KZG4=",
+          "title": "AMARGA NAVIDAD",
+          "start": "11:45 am",
+          "venue": "GRAND THÉÂTRE LUMIÈRE",
+          "score": 9.5,
+          "grand_theatre_gala": false
+        },
+        {
+          "idproj": "CrOedA/aiG0=",
+          "title": "NOTRE SALUT",
+          "start": "3:00 pm",
+          "venue": "GRAND THÉÂTRE LUMIÈRE",
+          "score": 6.5,
+          "grand_theatre_gala": false
+        },
+        {
+          "idproj": "4i6G1aRAPC8=",
+          "title": "LA BATAILLE DE GAULLE : L'ÂGE DE FER",
+          "start": "6:45 pm",
+          "venue": "GRAND THÉÂTRE LUMIÈRE",
+          "score": 4.5,
+          "grand_theatre_gala": true
+        },
+        {
+          "idproj": "JEmZ2euMjxg=",
+          "title": "THE MAN I LOVE",
+          "start": "10:30 pm",
+          "venue": "GRAND THÉÂTRE LUMIÈRE",
+          "score": 8,
+          "grand_theatre_gala": true
         }
       ]
     }
