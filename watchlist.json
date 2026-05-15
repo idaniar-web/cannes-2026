@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-05-15T05:09:18.223Z",
+  "updated_at": "2026-05-15T05:10:22.707Z",
   "items": [
     {
       "idproj": "Tcp1LPih5xQ=",
@@ -10,22 +10,6 @@
       "end": "11:54 pm",
       "start_minutes": 1320,
       "end_minutes": 1434,
-      "venue": "GRAND THÉÂTRE LUMIÈRE",
-      "is_gala": true,
-      "grand_theatre_gala": true,
-      "score": 0,
-      "auto_book": true,
-      "allow_swap": false
-    },
-    {
-      "idproj": "GsJS4Inj9JU=",
-      "title": "EL SER QUERIDO (THE BELOVED) RODRIGO SOROGOYEN En Compétition - Longs",
-      "director": "",
-      "date": "2026-05-16",
-      "start": "6:15 pm",
-      "end": "8:30 pm",
-      "start_minutes": 1095,
-      "end_minutes": 1230,
       "venue": "GRAND THÉÂTRE LUMIÈRE",
       "is_gala": true,
       "grand_theatre_gala": true,
@@ -62,6 +46,22 @@
       "is_gala": false,
       "grand_theatre_gala": false,
       "score": 8.5,
+      "auto_book": true,
+      "allow_swap": true
+    },
+    {
+      "idproj": "zchYY5hPu5c=",
+      "title": "DIAMOND",
+      "director": "ANDY GARCIA",
+      "date": "2026-05-19",
+      "start": "10:00 pm",
+      "end": "11:58 pm",
+      "start_minutes": 1320,
+      "end_minutes": 1438,
+      "venue": "GRAND THÉÂTRE LUMIÈRE",
+      "is_gala": true,
+      "grand_theatre_gala": true,
+      "score": 4.5,
       "auto_book": true,
       "allow_swap": true
     }
