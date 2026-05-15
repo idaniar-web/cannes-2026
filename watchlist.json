@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-05-15T05:20:23.433Z",
+  "updated_at": "2026-05-15T12:04:11.229Z",
   "items": [
     {
       "idproj": "Tcp1LPih5xQ=",
@@ -10,22 +10,6 @@
       "end": "11:54 pm",
       "start_minutes": 1320,
       "end_minutes": 1434,
-      "venue": "GRAND THÉÂTRE LUMIÈRE",
-      "is_gala": true,
-      "grand_theatre_gala": true,
-      "score": 0,
-      "auto_book": true,
-      "allow_swap": false
-    },
-    {
-      "idproj": "YB1Da7gazc8=",
-      "title": "KARMA GUILLAUME CANET Hors Compétition",
-      "director": "",
-      "date": "2026-05-15",
-      "start": "6:30 pm",
-      "end": "8:59 pm",
-      "start_minutes": 1110,
-      "end_minutes": 1259,
       "venue": "GRAND THÉÂTRE LUMIÈRE",
       "is_gala": true,
       "grand_theatre_gala": true,
