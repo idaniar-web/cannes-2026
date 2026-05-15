@@ -1428,22 +1428,16 @@ async function submitWishlist() {
   };
 
   btn.disabled = true;
-  statusEl.innerHTML = '<span style="color:var(--muted);">Fetching SHA…</span>';
+  statusEl.innerHTML = '<span style="color:var(--muted);">Committing…</span>';
   try {
-    let sha = await fetchWishlistShaForCommit(token);
-    statusEl.innerHTML = '<span style="color:var(--muted);">Committing…</span>';
-    let result;
-    try {
-      result = await putWishlist(payload, token, sha);
-    } catch (e) {
-      if (/HTTP 409/.test(e.message)) {
-        statusEl.innerHTML = '<span style="color:var(--muted);">SHA changed; retrying…</span>';
-        sha = await fetchWishlistShaForCommit(token);
-        result = await putWishlist(payload, token, sha);
-      } else {
-        throw e;
-      }
-    }
+    const result = await commitWithRetry(
+      fetchWishlistShaForCommit,
+      (tok, sha) => putWishlist(payload, tok, sha),
+      token,
+      { onRetry: (attempt, delay) => {
+          statusEl.innerHTML = `<span style="color:var(--muted);">SHA changed; retry ${attempt}/3 in ${delay}ms…</span>`;
+        } }
+    );
     localStorage.setItem('github_pat', token);
     WISHLIST_DIRTY = false;
     const commitSha = result?.commit?.sha?.slice(0, 7) || '?';
@@ -1468,6 +1462,29 @@ async function fetchWishlistShaForCommit(token) {
   if (r.status === 404) return null;
   if (!r.ok) throw new Error(`GET contents: HTTP ${r.status}`);
   return (await r.json()).sha;
+}
+
+// Generic 409-retry helper for the GitHub Contents API.
+// Calls fetchSha() then putFn(sha). On HTTP 409 (sha mismatch — someone
+// else committed in the meantime) it refetches and retries up to maxAttempts
+// times with exponential backoff. Surfaces non-409 errors immediately.
+async function commitWithRetry(fetchSha, putFn, token,
+                               { maxAttempts = 4, baseDelayMs = 250,
+                                 onRetry = null } = {}) {
+  let lastErr = null;
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    const sha = await fetchSha(token);
+    try {
+      return await putFn(token, sha);
+    } catch (e) {
+      lastErr = e;
+      if (!/HTTP 409/.test(e.message) || attempt === maxAttempts) throw e;
+      const delay = baseDelayMs * Math.pow(2, attempt - 1);
+      if (onRetry) onRetry(attempt, delay);
+      await new Promise(r => setTimeout(r, delay));
+    }
+  }
+  throw lastErr;
 }
 
 // ============ Watchlist =============
@@ -1791,18 +1808,14 @@ async function submitWatchlist() {
   btn.disabled = true;
   statusEl.innerHTML = '<span style="color:var(--muted);">Committing…</span>';
   try {
-    let sha = await fetchWatchlistSha(token);
-    let result;
-    try {
-      result = await putWatchlist(payload, token, sha);
-    } catch (e) {
-      if (/HTTP 409/.test(e.message)) {
-        sha = await fetchWatchlistSha(token);
-        result = await putWatchlist(payload, token, sha);
-      } else {
-        throw e;
-      }
-    }
+    const result = await commitWithRetry(
+      fetchWatchlistSha,
+      (tok, sha) => putWatchlist(payload, tok, sha),
+      token,
+      { onRetry: (attempt, delay) => {
+          statusEl.innerHTML = `<span style="color:var(--muted);">SHA changed; retry ${attempt}/3 in ${delay}ms…</span>`;
+        } }
+    );
     localStorage.setItem('github_pat', token);
     const commitSha = result?.commit?.sha?.slice(0, 7) || '?';
     statusEl.innerHTML = `<span style="color:var(--good);">
@@ -2108,18 +2121,14 @@ async function submitControl() {
   btn.disabled = true;
   statusEl.innerHTML = '<span style="color:var(--muted);">Committing…</span>';
   try {
-    let sha = await fetchConfigSha(token);
-    let result;
-    try {
-      result = await putConfig(CONTROL_STATE, token, sha);
-    } catch (e) {
-      if (/HTTP 409/.test(e.message)) {
-        sha = await fetchConfigSha(token);
-        result = await putConfig(CONTROL_STATE, token, sha);
-      } else {
-        throw e;
-      }
-    }
+    const result = await commitWithRetry(
+      fetchConfigSha,
+      (tok, sha) => putConfig(CONTROL_STATE, tok, sha),
+      token,
+      { onRetry: (attempt, delay) => {
+          statusEl.innerHTML = `<span style="color:var(--muted);">SHA changed; retry ${attempt}/3 in ${delay}ms…</span>`;
+        } }
+    );
     localStorage.setItem('github_pat', token);
     const commitSha = result?.commit?.sha?.slice(0, 7) || '?';
     statusEl.innerHTML = `<span style="color:var(--good);">
