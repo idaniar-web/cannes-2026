@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-05-15T05:13:54.347Z",
+  "updated_at": "2026-05-15T05:18:41.648Z",
   "items": [
     {
       "idproj": "Tcp1LPih5xQ=",
@@ -78,6 +78,22 @@
       "is_gala": true,
       "grand_theatre_gala": true,
       "score": 9.5,
+      "auto_book": true,
+      "allow_swap": true
+    },
+    {
+      "idproj": "LSGIjkvAyeY=",
+      "title": "REHEARSALS FOR A REVOLUTION",
+      "director": "PEGAH AHANGARANI",
+      "date": "2026-05-17",
+      "start": "9:15 am",
+      "end": "10:50 am",
+      "start_minutes": 555,
+      "end_minutes": 650,
+      "venue": "CINEUM SCREEN X",
+      "is_gala": false,
+      "grand_theatre_gala": false,
+      "score": 5,
       "auto_book": true,
       "allow_swap": true
     }
