@@ -1,21 +1,4 @@
 {
-  "updated_at": "2026-05-16T05:16:59.438Z",
-  "items": [
-    {
-      "idproj": "GsJS4Inj9JU=",
-      "title": "EL SER QUERIDO (THE BELOVED) RODRIGO SOROGOYEN En Compétition - Longs",
-      "director": "",
-      "date": "2026-05-16",
-      "start": "6:15 pm",
-      "end": "8:30 pm",
-      "start_minutes": 1095,
-      "end_minutes": 1230,
-      "venue": "GRAND THÉÂTRE LUMIÈRE",
-      "is_gala": true,
-      "grand_theatre_gala": true,
-      "score": 0,
-      "auto_book": true,
-      "allow_swap": true
-    }
-  ]
+  "updated_at": "2026-05-16T14:10:26.861Z",
+  "items": []
 }
