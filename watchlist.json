@@ -1,4 +1,53 @@
 {
-  "updated_at": "2026-05-16T14:10:26.861Z",
-  "items": []
+  "updated_at": "2026-05-16T23:30:02.662Z",
+  "items": [
+    {
+      "idproj": "JlIEfWb/TZU=",
+      "title": "CLUB KID",
+      "director": "JORDAN FIRSTMAN",
+      "date": "2026-05-17",
+      "start": "4:15 pm",
+      "end": "6:21 pm",
+      "start_minutes": 975,
+      "end_minutes": 1101,
+      "venue": "CINEUM SALLE 3",
+      "is_gala": false,
+      "grand_theatre_gala": false,
+      "score": 7,
+      "auto_book": true,
+      "allow_swap": true
+    },
+    {
+      "idproj": "Jfu6YKcXhM4=",
+      "title": "HOPE",
+      "director": "NA HONG-JIN",
+      "date": "2026-05-17",
+      "start": "9:30 pm",
+      "end": "12:10 am",
+      "start_minutes": 1290,
+      "end_minutes": 1450,
+      "venue": "GRAND THÉÂTRE LUMIÈRE",
+      "is_gala": true,
+      "grand_theatre_gala": true,
+      "score": 9.5,
+      "auto_book": true,
+      "allow_swap": true
+    },
+    {
+      "idproj": "iKtoUorIMEw=",
+      "title": "EL SER QUERIDO (THE BELOVED)",
+      "director": "RODRIGO SOROGOYEN",
+      "date": "2026-05-19",
+      "start": "6:00 pm",
+      "end": "8:15 pm",
+      "start_minutes": 1080,
+      "end_minutes": 1215,
+      "venue": "CINEUM SALLE 3",
+      "is_gala": false,
+      "grand_theatre_gala": false,
+      "score": 8,
+      "auto_book": true,
+      "allow_swap": true
+    }
+  ]
 }
