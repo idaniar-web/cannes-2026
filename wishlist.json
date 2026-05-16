@@ -1,9 +1,9 @@
 {
-  "updated_at": "2026-05-15T22:02:19.167Z",
+  "updated_at": "2026-05-16T23:27:19.095Z",
   "source": "dashboard",
   "by_date": {
     "2026-05-17": {
-      "generated_at": "2026-05-15T22:02:19.167Z",
+      "generated_at": "2026-05-16T23:27:19.095Z",
       "screenings": [
         {
           "idproj": "Jfu6YKcXhM4=",
@@ -32,7 +32,7 @@
       ]
     },
     "2026-05-18": {
-      "generated_at": "2026-05-15T22:02:19.167Z",
+      "generated_at": "2026-05-16T23:27:19.095Z",
       "screenings": [
         {
           "idproj": "uq4bZ0NWdH4=",
@@ -85,7 +85,7 @@
       ]
     },
     "2026-05-19": {
-      "generated_at": "2026-05-15T22:02:19.167Z",
+      "generated_at": "2026-05-16T23:27:19.095Z",
       "screenings": [
         {
           "idproj": "2pqSXzpt0qU=",
@@ -122,7 +122,7 @@
       ]
     },
     "2026-05-20": {
-      "generated_at": "2026-05-15T22:02:19.167Z",
+      "generated_at": "2026-05-16T23:27:19.095Z",
       "screenings": [
         {
           "idproj": "lXiY1xq9Yuw=",
@@ -170,6 +170,51 @@
           "start": "10:30 pm",
           "venue": "GRAND THÉÂTRE LUMIÈRE",
           "score": 8,
+          "grand_theatre_gala": true
+        }
+      ]
+    },
+    "2026-05-21": {
+      "generated_at": "2026-05-16T23:27:19.095Z",
+      "screenings": [
+        {
+          "idproj": "u4j1IpQpr+E=",
+          "title": "THE MAN I LOVE",
+          "start": "8:30 am",
+          "venue": "GRAND THÉÂTRE LUMIÈRE",
+          "score": 8,
+          "grand_theatre_gala": false
+        },
+        {
+          "idproj": "8GQpvoHc7wk=",
+          "title": "UĻA (ULYA)",
+          "start": "11:00 am",
+          "venue": "DEBUSSY THEATRE",
+          "score": 3,
+          "grand_theatre_gala": false
+        },
+        {
+          "idproj": "ZmZAOxfLqjg=",
+          "title": "VICTORIAN PSYCHO",
+          "start": "2:00 pm",
+          "venue": "DEBUSSY THEATRE",
+          "score": 8,
+          "grand_theatre_gala": false
+        },
+        {
+          "idproj": "0DyGQrAe3jc=",
+          "title": "LA BOLA NEGRA",
+          "start": "6:00 pm",
+          "venue": "GRAND THÉÂTRE LUMIÈRE",
+          "score": 8,
+          "grand_theatre_gala": true
+        },
+        {
+          "idproj": "Md9LZnXkbxM=",
+          "title": "COWARD",
+          "start": "10:00 pm",
+          "venue": "GRAND THÉÂTRE LUMIÈRE",
+          "score": 7,
           "grand_theatre_gala": true
         }
       ]
