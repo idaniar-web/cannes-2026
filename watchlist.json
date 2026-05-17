@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-05-17T15:04:09.071Z",
+  "updated_at": "2026-05-17T15:30:12.585Z",
   "items": [
     {
       "idproj": "Jfu6YKcXhM4=",
@@ -18,17 +18,33 @@
       "allow_swap": true
     },
     {
-      "idproj": "ieRJ0ScfujA=",
+      "idproj": "EFAyyRa7Fx8=",
       "title": "GARANCE",
       "director": "JEANNE HERRY",
-      "date": "2026-05-17",
-      "start": "6:30 pm",
-      "end": "8:30 pm",
-      "start_minutes": 1110,
-      "end_minutes": 1230,
+      "date": "2026-05-18",
+      "start": "8:30 am",
+      "end": "10:30 am",
+      "start_minutes": 510,
+      "end_minutes": 630,
       "venue": "GRAND THÉÂTRE LUMIÈRE",
-      "is_gala": true,
-      "grand_theatre_gala": true,
+      "is_gala": false,
+      "grand_theatre_gala": false,
+      "score": 7.5,
+      "auto_book": true,
+      "allow_swap": true
+    },
+    {
+      "idproj": "efkmogRBM0c=",
+      "title": "GARANCE",
+      "director": "JEANNE HERRY",
+      "date": "2026-05-18",
+      "start": "8:30 am",
+      "end": "10:30 am",
+      "start_minutes": 510,
+      "end_minutes": 630,
+      "venue": "AGNÈS VARDA THEATRE",
+      "is_gala": false,
+      "grand_theatre_gala": false,
       "score": 7.5,
       "auto_book": true,
       "allow_swap": true
