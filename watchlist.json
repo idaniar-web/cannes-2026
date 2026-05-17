@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-05-16T23:30:02.662Z",
+  "updated_at": "2026-05-17T05:08:30.074Z",
   "items": [
     {
       "idproj": "JlIEfWb/TZU=",
@@ -30,22 +30,6 @@
       "is_gala": true,
       "grand_theatre_gala": true,
       "score": 9.5,
-      "auto_book": true,
-      "allow_swap": true
-    },
-    {
-      "idproj": "iKtoUorIMEw=",
-      "title": "EL SER QUERIDO (THE BELOVED)",
-      "director": "RODRIGO SOROGOYEN",
-      "date": "2026-05-19",
-      "start": "6:00 pm",
-      "end": "8:15 pm",
-      "start_minutes": 1080,
-      "end_minutes": 1215,
-      "venue": "CINEUM SALLE 3",
-      "is_gala": false,
-      "grand_theatre_gala": false,
-      "score": 8,
       "auto_book": true,
       "allow_swap": true
     }
