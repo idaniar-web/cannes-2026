@@ -1,22 +1,6 @@
 {
-  "updated_at": "2026-05-17T09:25:48.835Z",
+  "updated_at": "2026-05-17T09:46:52.264Z",
   "items": [
-    {
-      "idproj": "JlIEfWb/TZU=",
-      "title": "CLUB KID",
-      "director": "JORDAN FIRSTMAN",
-      "date": "2026-05-17",
-      "start": "4:15 pm",
-      "end": "6:21 pm",
-      "start_minutes": 975,
-      "end_minutes": 1101,
-      "venue": "CINEUM SALLE 3",
-      "is_gala": false,
-      "grand_theatre_gala": false,
-      "score": 7,
-      "auto_book": true,
-      "allow_swap": true
-    },
     {
       "idproj": "Jfu6YKcXhM4=",
       "title": "HOPE",
