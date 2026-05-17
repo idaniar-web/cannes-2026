@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-05-17T15:30:12.585Z",
+  "updated_at": "2026-05-17T18:24:32.103Z",
   "items": [
     {
       "idproj": "Jfu6YKcXhM4=",
@@ -18,34 +18,18 @@
       "allow_swap": true
     },
     {
-      "idproj": "EFAyyRa7Fx8=",
-      "title": "GARANCE",
-      "director": "JEANNE HERRY",
+      "idproj": "5lpRaC4n9wQ=",
+      "title": "HOPE",
+      "director": "NA HONG-JIN",
       "date": "2026-05-18",
-      "start": "8:30 am",
-      "end": "10:30 am",
-      "start_minutes": 510,
-      "end_minutes": 630,
+      "start": "11:30 am",
+      "end": "2:10 pm",
+      "start_minutes": 690,
+      "end_minutes": 850,
       "venue": "GRAND THÉÂTRE LUMIÈRE",
       "is_gala": false,
       "grand_theatre_gala": false,
-      "score": 7.5,
-      "auto_book": true,
-      "allow_swap": true
-    },
-    {
-      "idproj": "efkmogRBM0c=",
-      "title": "GARANCE",
-      "director": "JEANNE HERRY",
-      "date": "2026-05-18",
-      "start": "8:30 am",
-      "end": "10:30 am",
-      "start_minutes": 510,
-      "end_minutes": 630,
-      "venue": "AGNÈS VARDA THEATRE",
-      "is_gala": false,
-      "grand_theatre_gala": false,
-      "score": 7.5,
+      "score": 9.5,
       "auto_book": true,
       "allow_swap": true
     }
