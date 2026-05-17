@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-05-17T05:08:30.074Z",
+  "updated_at": "2026-05-17T09:25:48.835Z",
   "items": [
     {
       "idproj": "JlIEfWb/TZU=",
@@ -30,6 +30,22 @@
       "is_gala": true,
       "grand_theatre_gala": true,
       "score": 9.5,
+      "auto_book": true,
+      "allow_swap": true
+    },
+    {
+      "idproj": "VJ29BU6h0TQ=",
+      "title": "EVERYTIME",
+      "director": "SANDRA WOLLNER",
+      "date": "2026-05-19",
+      "start": "1:15 pm",
+      "end": "3:16 pm",
+      "start_minutes": 795,
+      "end_minutes": 916,
+      "venue": "CINEUM SALLE 3",
+      "is_gala": false,
+      "grand_theatre_gala": false,
+      "score": 7.5,
       "auto_book": true,
       "allow_swap": true
     }
