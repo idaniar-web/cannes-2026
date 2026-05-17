@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-05-17T09:46:52.264Z",
+  "updated_at": "2026-05-17T12:53:16.081Z",
   "items": [
     {
       "idproj": "Jfu6YKcXhM4=",
@@ -29,6 +29,22 @@
       "venue": "CINEUM SALLE 3",
       "is_gala": false,
       "grand_theatre_gala": false,
+      "score": 7.5,
+      "auto_book": true,
+      "allow_swap": true
+    },
+    {
+      "idproj": "ieRJ0ScfujA=",
+      "title": "GARANCE",
+      "director": "JEANNE HERRY",
+      "date": "2026-05-17",
+      "start": "6:30 pm",
+      "end": "8:30 pm",
+      "start_minutes": 1110,
+      "end_minutes": 1230,
+      "venue": "GRAND THÉÂTRE LUMIÈRE",
+      "is_gala": true,
+      "grand_theatre_gala": true,
       "score": 7.5,
       "auto_book": true,
       "allow_swap": true
