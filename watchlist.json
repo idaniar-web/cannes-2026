@@ -1,22 +1,6 @@
 {
-  "updated_at": "2026-05-17T18:24:32.103Z",
+  "updated_at": "2026-05-17T21:42:13.155Z",
   "items": [
-    {
-      "idproj": "Jfu6YKcXhM4=",
-      "title": "HOPE",
-      "director": "NA HONG-JIN",
-      "date": "2026-05-17",
-      "start": "9:30 pm",
-      "end": "12:10 am",
-      "start_minutes": 1290,
-      "end_minutes": 1450,
-      "venue": "GRAND THÉÂTRE LUMIÈRE",
-      "is_gala": true,
-      "grand_theatre_gala": true,
-      "score": 9.5,
-      "auto_book": true,
-      "allow_swap": true
-    },
     {
       "idproj": "5lpRaC4n9wQ=",
       "title": "HOPE",
