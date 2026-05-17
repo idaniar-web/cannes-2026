@@ -1,9 +1,9 @@
 {
-  "updated_at": "2026-05-17T21:43:20.008Z",
+  "updated_at": "2026-05-17T21:47:18.279Z",
   "source": "dashboard",
   "by_date": {
     "2026-05-17": {
-      "generated_at": "2026-05-17T21:43:20.008Z",
+      "generated_at": "2026-05-17T21:47:18.279Z",
       "screenings": [
         {
           "idproj": "Jfu6YKcXhM4=",
@@ -24,7 +24,7 @@
       ]
     },
     "2026-05-18": {
-      "generated_at": "2026-05-17T21:43:20.008Z",
+      "generated_at": "2026-05-17T21:47:18.279Z",
       "screenings": [
         {
           "idproj": "uq4bZ0NWdH4=",
@@ -77,7 +77,7 @@
       ]
     },
     "2026-05-19": {
-      "generated_at": "2026-05-17T21:43:20.008Z",
+      "generated_at": "2026-05-17T21:47:18.279Z",
       "screenings": [
         {
           "idproj": "2pqSXzpt0qU=",
@@ -114,7 +114,7 @@
       ]
     },
     "2026-05-20": {
-      "generated_at": "2026-05-17T21:43:20.008Z",
+      "generated_at": "2026-05-17T21:47:18.279Z",
       "screenings": [
         {
           "idproj": "lXiY1xq9Yuw=",
@@ -167,7 +167,7 @@
       ]
     },
     "2026-05-21": {
-      "generated_at": "2026-05-17T21:43:20.008Z",
+      "generated_at": "2026-05-17T21:47:18.279Z",
       "screenings": [
         {
           "idproj": "u4j1IpQpr+E=",
@@ -212,7 +212,7 @@
       ]
     },
     "2026-05-22": {
-      "generated_at": "2026-05-17T21:43:20.008Z",
+      "generated_at": "2026-05-17T21:47:18.279Z",
       "screenings": [
         {
           "idproj": "7gRojvl00h4=",
@@ -223,19 +223,19 @@
           "grand_theatre_gala": false
         },
         {
-          "idproj": "sCqIDgaGkh8=",
-          "title": "COURTS MÉTRAGES EN COMPÉTITION",
-          "start": "11:00 am",
-          "venue": "DEBUSSY THEATRE",
-          "score": 7,
+          "idproj": "BC1p+jG6NLQ=",
+          "title": "LA BOLA NEGRA",
+          "start": "11:15 am",
+          "venue": "AGNÈS VARDA THEATRE",
+          "score": 8,
           "grand_theatre_gala": false
         },
         {
-          "idproj": "6WIQqG2VNcQ=",
-          "title": "THE END OF IT",
-          "start": "2:30 pm",
-          "venue": "AGNÈS VARDA THEATRE",
-          "score": 5.5,
+          "idproj": "qCvvHOzSy7M=",
+          "title": "COURTS MÉTRAGES EN COMPÉTITION",
+          "start": "2:00 pm",
+          "venue": "BUÑUEL THEATRE",
+          "score": 7,
           "grand_theatre_gala": false
         },
         {
