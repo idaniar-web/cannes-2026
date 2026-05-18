@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-05-18T06:24:13.258Z",
+  "updated_at": "2026-05-18T06:28:54.385Z",
   "items": [
     {
       "idproj": "y3LhojNT1JU=",
@@ -14,6 +14,22 @@
       "is_gala": false,
       "grand_theatre_gala": false,
       "score": 8.5,
+      "auto_book": true,
+      "allow_swap": true
+    },
+    {
+      "idproj": "zchYY5hPu5c=",
+      "title": "DIAMOND",
+      "director": "ANDY GARCIA",
+      "date": "2026-05-19",
+      "start": "10:00 pm",
+      "end": "11:58 pm",
+      "start_minutes": 1320,
+      "end_minutes": 1438,
+      "venue": "GRAND THÉÂTRE LUMIÈRE",
+      "is_gala": true,
+      "grand_theatre_gala": true,
+      "score": 4.5,
       "auto_book": true,
       "allow_swap": true
     }
