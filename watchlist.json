@@ -1,19 +1,19 @@
 {
-  "updated_at": "2026-05-17T21:42:13.155Z",
+  "updated_at": "2026-05-18T06:24:13.258Z",
   "items": [
     {
-      "idproj": "5lpRaC4n9wQ=",
-      "title": "HOPE",
-      "director": "NA HONG-JIN",
-      "date": "2026-05-18",
-      "start": "11:30 am",
-      "end": "2:10 pm",
-      "start_minutes": 690,
-      "end_minutes": 850,
+      "idproj": "y3LhojNT1JU=",
+      "title": "MINOTAUR",
+      "director": "ANDREÏ ZVIAGUINTSEV",
+      "date": "2026-05-19",
+      "start": "3:30 pm",
+      "end": "5:50 pm",
+      "start_minutes": 930,
+      "end_minutes": 1070,
       "venue": "GRAND THÉÂTRE LUMIÈRE",
       "is_gala": false,
       "grand_theatre_gala": false,
-      "score": 9.5,
+      "score": 8.5,
       "auto_book": true,
       "allow_swap": true
     }
